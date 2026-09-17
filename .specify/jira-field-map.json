@@ -1,0 +1,85 @@
+{
+  "_purpose": "Maps semantic requirement fields to this Jira instance's custom-field ids. /speckit-specify resolves ids by matching a field's DISPLAY NAME against the synonyms below, then caches the result in 'resolved'. Custom-field ids differ per Jira site, so nothing here may be hard-coded into a skill.",
+  "synonyms": {
+    "acceptance_criteria": [
+      "acceptance criteria",
+      "acceptance criterion",
+      "acceptance tests",
+      "ac"
+    ],
+    "design_link": [
+      "design",
+      "design link",
+      "design /mockup links",
+      "mockup",
+      "mockup links",
+      "figma",
+      "wireframe",
+      "ux link"
+    ],
+    "impacted_areas": [
+      "impacted areas",
+      "affected components",
+      "impacted systems",
+      "impacted area"
+    ],
+    "definition_of_done": [
+      "definition of done",
+      "dod"
+    ],
+    "success_metrics": [
+      "success metrics",
+      "success metric"
+    ],
+    "dependencies_field": [
+      "dependencies / related tickets",
+      "dependencies",
+      "related tickets"
+    ],
+    "epic_link": [
+      "epic link",
+      "parent link"
+    ],
+    "sprint": [
+      "sprint"
+    ],
+    "story_points": [
+      "story points",
+      "story point estimate"
+    ]
+  },
+  "document_type_hints": {
+    "_purpose": "Secondary signal for classifying a downloaded attachment (see /speckit-specify 1F.1). Content (title/heading) always outranks filename.",
+    "prd": [
+      "prd",
+      "product requirements",
+      "requirements document"
+    ],
+    "decision_log": [
+      "decision log",
+      "adr",
+      "architecture decision",
+      "design decision"
+    ],
+    "mvp_or_roadmap": [
+      "mvp",
+      "roadmap",
+      "product proposal",
+      "product roadmap"
+    ],
+    "design_or_mockup": [
+      "mockup",
+      "wireframe",
+      "design spec",
+      "ui design",
+      "figma"
+    ]
+  },
+  "overrides": {},
+  "resolved": {},
+  "_notes": [
+    "'overrides' pins a semantic field to an exact id when name matching is ambiguous, e.g. {\"acceptance_criteria\": \"customfield_10133\"}. An override always wins.",
+    "'resolved' is written by /speckit-specify after discovery: {\"acceptance_criteria\": {\"id\": \"...\", \"name\": \"...\", \"matched_by\": \"name-synonym|override|meta\", \"resolved_at\": \"...\"}}.",
+    "If acceptance_criteria cannot be resolved, /speckit-specify records a missing_sources entry and says so. It never proceeds as though the ticket had no acceptance criteria."
+  ]
+}

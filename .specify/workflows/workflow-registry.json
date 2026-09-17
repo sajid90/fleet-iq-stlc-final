@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "workflows": {
+    "speckit": {
+      "name": "Full STLC Cycle",
+      "version": "2.0.0",
+      "description": "Runs requirement analysis \u2192 test planning \u2192 test cases \u2192 automation \u2192 execution with review gates",
+      "source": "bundled (adapted for STLC)",
+      "installed_at": "2026-09-10T08:56:34.448524+00:00",
+      "updated_at": "2026-09-10T08:56:34.448547+00:00"
+    }
+  }
+}

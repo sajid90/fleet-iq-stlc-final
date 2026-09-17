@@ -1,0 +1,38 @@
+# Secrets — never commit
+.env
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Test output — raw Allure/Playwright artifacts, wherever they land.
+# Matched by name so a misconfigured invocation (e.g. relative addopts paths
+# resolving against an unexpected cwd) can't silently commit runtime debris.
+# Does NOT match specs/<feature>/reports/, which holds hand-written,
+# committed execution-report .md files, not generated JSON/attachments.
+/reports/
+allure-results/
+allure-report/
+test-artifacts/
+test-results/
+playwright-report/
+trace.zip
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Claude Code agent folder may hold credentials — see spec-kit security note.
+# Uncomment if you do not want it tracked:
+# .claude/
+
+# Claude Code runtime lock (per-session state, not shareable)
+.claude/scheduled_tasks.lock

@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.1",
+  "mode": "jira",
+  "jira_issue": "",
+  "jira_site": "",
+  "retrieved_at": "",
+  "field_map": {},
+  "provenance_rules": [],
+  "_sources_schema_notes": [
+    "Each entry in sources[]: {type, id, found_on, relationship, authority, version?, retrieved_at, fields_used?}.",
+    "'found_on' is the issue key where this artifact was actually located (the story, the Epic, a specific sub-task key, or a linked-issue key) -- never assumed from its type. A PRD found on a sub-task records found_on as that sub-task's key, not the Epic's.",
+    "'relationship' is the structural path that led there: primary | parent | subtask-of-story | subtask-of-epic | issue-link | prose-dependency | cache-copy.",
+    "Do not pre-fill this array with stub rows or guessed ids. An unresolved source belongs in missing_sources, not here with an empty id."
+  ],
+  "sources": [],
+  "acceptance_criteria": [],
+  "dependencies": [],
+  "conflicts": [],
+  "missing_sources": [],
+  "unverified_cache": []
+}

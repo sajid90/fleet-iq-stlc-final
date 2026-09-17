@@ -1,0 +1,91 @@
+schema_version: "1.0"
+workflow:
+  id: "speckit"
+  name: "Full STLC Cycle"
+  version: "1.0.0"
+  author: "GitHub (spec-kit), adapted for STLC"
+  description: "Requirement analysis → test planning → test cases → automation → convergence → execution, with human approval gates"
+
+requires:
+  # 0.8.5 is the first release with engine-side resolution of the
+  # ``integration: "auto"`` default. Older versions would treat "auto"
+  # as a literal integration key and fail at dispatch.
+  speckit_version: ">=0.8.5"
+  integrations:
+    # This adapted workflow adds a fifth step (speckit.test) that is provided
+    # by the project's own .claude/skills/speckit-test skill rather than by an
+    # upstream integration. It therefore runs against the Claude integration
+    # this project was initialized with.
+    any:
+      - "claude"
+
+inputs:
+  requirement:
+    type: string
+    required: true
+    prompt: "Jira issue key or URL (e.g. FLTIQ-33 or https://fleetiq-acldigital.atlassian.net/browse/FLTIQ-33). A PRD path or requirement text is a degraded fallback."
+  integration:
+    type: string
+    default: "auto"
+    prompt: "Integration to use ('auto' uses the project's initialized integration)"
+
+steps:
+  - id: specify
+    command: speckit.specify
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.requirement }}"
+
+  - id: review-requirements
+    type: gate
+    message: "Review spec.md AND source-manifest.json. Are the resolved sources right, the recorded conflicts acceptable, the missing sources understood, and the UNDEFINED items genuinely undefined? Approving sets Status: Approved."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: plan
+    command: speckit.plan
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.requirement }}"
+
+  - id: review-plan
+    type: gate
+    message: "Review the test plan: is the manual/automated split correct before writing test cases?"
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: tasks
+    command: speckit.tasks
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.requirement }}"
+
+  - id: review-test-cases
+    type: gate
+    message: "Review test-cases.xlsx: is coverage adequate before automating?"
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: implement
+    command: speckit.implement
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.requirement }}"
+
+  - id: converge
+    command: speckit.converge
+    integration: "{{ inputs.integration }}"
+    input:
+      args: ""
+
+  - id: review-convergence
+    type: gate
+    message: "Review the convergence findings: is every outstanding CRITICAL/HIGH gap either closed or accepted in writing before a full execution cycle?"
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: test
+    command: speckit.test
+    integration: "{{ inputs.integration }}"
+    input:
+      args: ""
