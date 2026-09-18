@@ -1,5 +1,5 @@
 {
-  "_purpose": "Maps semantic requirement fields to this Jira instance's custom-field ids. /speckit-specify resolves ids by matching a field's DISPLAY NAME against the synonyms below, then caches the result in 'resolved'. Custom-field ids differ per Jira site, so nothing here may be hard-coded into a skill.",
+  "_purpose": "Maps semantic requirement fields to this Jira instance's custom-field ids. /speckit-specify resolves ids by matching a field's DISPLAY NAME against the synonyms below, then caches the result in 'resolved'. Custom-field ids differ per Jira site, so nothing here may be hard-coded into a skill. Note: FleetIQ's design artifacts are produced with Claude Design (claude.ai/design), not Figma -- the design_link value itself is a claude.ai/design URL, though the resolver still matches on the Jira field's NAME, not the tool the link points to.",
   "synonyms": {
     "acceptance_criteria": [
       "acceptance criteria",
@@ -14,6 +14,8 @@
       "mockup",
       "mockup links",
       "figma",
+      "claude design",
+      "claude.ai",
       "wireframe",
       "ux link"
     ],
