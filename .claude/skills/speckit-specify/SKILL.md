@@ -21,6 +21,38 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Pre-Execution Checks
 
+**Dependency resolution gate (run first, before anything else, including
+extension hooks below).** This command produces a governed artifact
+(`spec.md` + `source-manifest.json`) that every downstream phase trusts
+without re-verifying. A missing dependency here does not degrade into a
+slightly worse spec — it produces a spec that *looks* complete while silently
+skipping something the constitution requires. Verify each of the following
+and **halt**, reporting exactly which check failed and why, rather than
+proceeding in a degraded mode the requester did not ask for:
+
+- `.specify/memory/constitution.md` exists. If missing, stop and say:
+  > `.specify/memory/constitution.md` is missing. This command's output is
+  > checked against it (constitution I/II — source authority and evidence
+  > classification); without it there is nothing to classify DEFINED /
+  > OBSERVED / INFERRED / UNDEFINED against. Run `/speckit-constitution` to
+  > create it, or restore the file, then re-run.
+- `.specify/templates/source-manifest-template.json` exists. If missing, stop
+  and say:
+  > `.specify/templates/source-manifest-template.json` is missing, so
+  > `source-manifest.json` cannot be produced in the required schema. Restore
+  > it from the repository's template set before re-running.
+- `.specify/jira-field-map.json` exists. If missing, stop and say:
+  > `.specify/jira-field-map.json` is missing, so custom-field resolution
+  > (1D) has no synonym list to match against and would have to guess field
+  > ids — which this command never does. Restore the file before re-running.
+- **Atlassian MCP connectivity** is checked in 1B, once the ticket key/URL is
+  known — do not duplicate that check here, and do not skip it there either.
+- **Claude Design MCP connectivity** is checked in 1F.2, and only once a
+  design-link field is actually found resolved on an issue in the set — a
+  story with no design link never needs that connection.
+
+Only once this gate passes does any other Pre-Execution Check run.
+
 **Check for extension hooks (before specification)**:
 - Check if `.specify/extensions.yml` exists in the project root.
 - If it exists, read it and look for entries under the `hooks.before_specify` key
@@ -241,6 +273,38 @@ where a document was found, not just that it was found.
   classified with reasonable confidence is not silently forced into a
   category — record it as `type: "unclassified"` with the filename, so a
   reviewer can say what it is rather than the skill guessing.
+
+**1F.2 — Design connectivity gate (blocking).** If any issue in the resolved
+set carries a resolved design-link field value (1D), that design is not
+decoration — it is authority 5 (`presentation-and-interaction`), the only
+source for layout, exact copy and interaction detail. A design link that
+exists but cannot be read must not be silently recorded as merely missing;
+the requester needs to know a real, named source is going unread before this
+spec is written, not after.
+
+- Locate the Claude Design MCP tools (`ToolSearch` for `design project file`,
+  or `select:` with an exact name such as `DesignSync`).
+- Attempt to resolve the specific project referenced by the link (the
+  `/p/<project-id>` segment) with a read method (e.g. `get_project`). A
+  successful read confirms connectivity; then fetch the file named in the
+  link's `?file=...` query parameter and treat its content as a
+  `presentation-and-interaction` source per 1F.
+- **If the Claude Design MCP is not connected, connects but rejects
+  authorization, or the specific project/file cannot be read**, stop and say
+  exactly this rather than continuing in degraded mode:
+  > A design link is present on `<issue key>` (`<field name>`: `<url>`), but
+  > I cannot read its content — the Claude Design MCP connection is
+  > `<not connected | rejecting authorization | otherwise unreachable>`.
+  > This design is a first-class requirement source (constitution I,
+  > authority 5), not decoration, so I will not silently produce a spec that
+  > skips it. Either connect/authorize the Claude Design MCP server and
+  > re-run, or explicitly tell me to proceed without it — if you do, I will
+  > record it in `missing_sources` with `impact: high` and raise every
+  > UI-content requirement it would have settled as an open question (§13a if
+  > it affects scope, §13b otherwise) instead of writing a concrete expected
+  > result.
+- A story with **no design-link field resolved on any issue in the set**
+  skips this gate entirely: there is nothing to block on.
 
 **1G — Scan prose for dependencies, and fetch what prose finds fully — not
 shallowly.** Empty `issuelinks`, `attachment` and `comment` arrays are **not**
@@ -620,6 +684,8 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 Report to the user:
 
+- Dependency resolution gate result (all checks passed, or which one blocked
+  and how it was resolved before continuing)
 - `SPECIFY_FEATURE_DIRECTORY`, `SPEC_FILE` and `source-manifest.json` paths
 - Mode used (`jira` / `document` / `observation`) and the ticket key
 - **The resolved source chain**: story, parent Epic, PRD, decision logs,
@@ -640,6 +706,10 @@ Report to the user:
 
 ## Done When
 
+- [ ] Dependency resolution gate passed (constitution, source-manifest
+      template, jira-field-map present; Atlassian MCP connected; Claude
+      Design MCP connected if any design link was found) — or the command
+      halted and reported exactly which check failed
 - [ ] The full source chain walked: story → Epic → PRD → decision logs →
       designs → MVP → implementation, each resolved or recorded as missing
 - [ ] Custom fields resolved by display name; no `customfield_NNNNN` literal written
