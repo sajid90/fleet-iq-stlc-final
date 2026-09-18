@@ -78,7 +78,16 @@
     ]
   },
   "overrides": {},
-  "resolved": {},
+  "resolved": {
+    "acceptance_criteria": {"id": "customfield_10133", "name": "Acceptance Criteria ", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"},
+    "design_link": {"id": "customfield_10199", "name": "Design /Mockup Links", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"},
+    "impacted_areas": {"id": "customfield_10200", "name": "Impacted Areas", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"},
+    "success_metrics": {"id": "customfield_10201", "name": "Success Metrics", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"},
+    "definition_of_done": {"id": "customfield_10202", "name": "Definition of Done", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"},
+    "dependencies_field": {"id": "customfield_10203", "name": "Dependencies / Related Tickets", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"},
+    "sprint": {"id": "customfield_10020", "name": "Sprint", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"},
+    "story_points": {"id": "customfield_10016", "name": "Story point estimate", "matched_by": "name-synonym", "resolved_at": "2026-09-18T00:00:00Z"}
+  },
   "_notes": [
     "'overrides' pins a semantic field to an exact id when name matching is ambiguous, e.g. {\"acceptance_criteria\": \"customfield_10133\"}. An override always wins.",
     "'resolved' is written by /speckit-specify after discovery: {\"acceptance_criteria\": {\"id\": \"...\", \"name\": \"...\", \"matched_by\": \"name-synonym|override|meta\", \"resolved_at\": \"...\"}}.",

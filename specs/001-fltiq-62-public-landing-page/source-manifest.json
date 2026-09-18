@@ -1,0 +1,181 @@
+{
+  "schema_version": "1.1",
+  "mode": "jira",
+  "jira_issue": "FLTIQ-62",
+  "jira_site": "https://fleetiq-acldigital.atlassian.net",
+  "retrieved_at": "2026-09-18T00:00:00Z",
+  "field_map": {
+    "acceptance_criteria": {"id": "customfield_10133", "name": "Acceptance Criteria ", "matched_by": "name-synonym"},
+    "design_link": {"id": "customfield_10199", "name": "Design /Mockup Links", "matched_by": "name-synonym"},
+    "impacted_areas": {"id": "customfield_10200", "name": "Impacted Areas", "matched_by": "name-synonym"},
+    "success_metrics": {"id": "customfield_10201", "name": "Success Metrics", "matched_by": "name-synonym"},
+    "definition_of_done": {"id": "customfield_10202", "name": "Definition of Done", "matched_by": "name-synonym"},
+    "dependencies_field": {"id": "customfield_10203", "name": "Dependencies / Related Tickets", "matched_by": "name-synonym"},
+    "sprint": {"id": "customfield_10020", "name": "Sprint", "matched_by": "name-synonym"},
+    "story_points": {"id": "customfield_10016", "name": "Story point estimate", "matched_by": "name-synonym"}
+  },
+  "provenance_rules": [
+    {
+      "rule": "Acceptance criteria carrying a bracketed identifier such as [TIA-AC-04] come from the PRD; those without one are additions the backlog introduced.",
+      "stated_in": "FLTIQ-29 (Epic) description, under 'Conventions'",
+      "applied_as": "Every FLTIQ-62 AC bracketed [TIA-AC-NN] is classed origin=prd; every unbracketed AC is classed origin=backlog. The single AC bracketed [FLTIQ-60] does not match the [TIA-AC-NN] pattern this rule describes -- it is a backlog-added AC that cross-references its governing dependency ticket, not a PRD-origin marker. Classed origin=backlog with dependency=FLTIQ-60."
+    }
+  ],
+  "_sources_schema_notes": [
+    "Each entry in sources[]: {type, id, found_on, relationship, authority, version?, retrieved_at, fields_used?}.",
+    "'found_on' is the issue key where this artifact was actually located (the story, the Epic, a specific sub-task key, or a linked-issue key) -- never assumed from its type.",
+    "'relationship' is the structural path that led there: primary | parent | subtask-of-story | subtask-of-epic | issue-link | prose-dependency | cache-copy.",
+    "Do not pre-fill this array with stub rows or guessed ids. An unresolved source belongs in missing_sources, not here with an empty id."
+  ],
+  "sources": [
+    {
+      "type": "jira-story",
+      "id": "FLTIQ-62",
+      "found_on": "FLTIQ-62 (self)",
+      "relationship": "primary",
+      "authority": "scope-and-story-acceptance",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["description", "customfield_10133 (Acceptance Criteria)", "customfield_10199 (Design link)", "customfield_10200 (Impacted Areas)", "labels", "parent"]
+    },
+    {
+      "type": "jira-epic",
+      "id": "FLTIQ-29",
+      "found_on": "FLTIQ-29 (self)",
+      "relationship": "parent",
+      "authority": "feature-context",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["description (scope, dependencies, provenance convention)", "attachment (PRD docx, identified not parsed -- see prd source below)"]
+    },
+    {
+      "type": "prd",
+      "id": "FleetIQ_PRD_1_Tenant_Identity_and_Access_v1.2.docx",
+      "found_on": "FLTIQ-29",
+      "relationship": "parent",
+      "authority": "detailed-requirements",
+      "version": "1.2",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["attachment metadata only (filename, size, mimeType) -- binary not parsed in this session; content instead verified via the live Confluence copy below, same version"]
+    },
+    {
+      "type": "prd",
+      "id": "Confluence page 14057474 - 'PRD 1 Tenant, Identity & Access'",
+      "found_on": "Confluence space FM; located via full-text search seeded by the Epic's attachment filename and the PRD's own 'Related Documents' self-citation",
+      "relationship": "prose-dependency",
+      "authority": "detailed-requirements",
+      "version": "1.2 (Draft for Review)",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["full body read: acceptance criteria TIA-AC-74/77/80/81, section 8 Risks (TIA-R-1..12), section 8.3 Open Questions (TIA-Q-1..13), Related Documents list, Figure 4 (Home sidebar -- confirms the PRD's own use of the word 'Landing' refers to arriving at the post-auth Home dashboard, not the public marketing page this story builds)"]
+    },
+    {
+      "type": "jira-issue-context",
+      "id": "FLTIQ-53",
+      "found_on": "prose in FLTIQ-60 description ('the accessibility requirements in FLTIQ-53'); confirmed as an Epic child via JQL parent=FLTIQ-29",
+      "relationship": "prose-dependency",
+      "authority": "feature-context",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["description, customfield_10133 -- corroborates that [TIA-AC-77] and [TIA-AC-80] are PRD-origin criteria scoped 'across every screen in this epic', i.e. they apply to FLTIQ-62 even without a dedicated PRD section for the landing page"]
+    },
+    {
+      "type": "jira-issue-context",
+      "id": "FLTIQ-52",
+      "found_on": "confirmed as an Epic child via JQL parent=FLTIQ-29",
+      "relationship": "prose-dependency",
+      "authority": "feature-context",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["description, customfield_10133 -- corroborates that [TIA-AC-74] is a PRD-origin criterion scoped 'each screen in this epic', applying to FLTIQ-62"]
+    },
+    {
+      "type": "jira-issue",
+      "id": "FLTIQ-60",
+      "found_on": "FLTIQ-62 description (prose: 'Depends on FLTIQ-60 (design system)')",
+      "relationship": "prose-dependency",
+      "authority": "feature-context",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["description, status (Done), comment (links the Confluence design-handoff-process page)"]
+    },
+    {
+      "type": "jira-issue",
+      "id": "FLTIQ-33",
+      "found_on": "FLTIQ-62 description (prose: 'Links to FLTIQ-33 and FLTIQ-35')",
+      "relationship": "prose-dependency",
+      "authority": "feature-context",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["summary, status -- target screen for the 'Create account' CTA; confirmed 'need not exist before this page is built' per FLTIQ-62's own dependency note"]
+    },
+    {
+      "type": "jira-issue",
+      "id": "FLTIQ-35",
+      "found_on": "FLTIQ-62 description (prose: 'Links to FLTIQ-33 and FLTIQ-35')",
+      "relationship": "prose-dependency",
+      "authority": "feature-context",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["summary, status -- target screen for the 'Sign in' CTA"]
+    },
+    {
+      "type": "process-documentation",
+      "id": "Confluence page 13533185 - 'Design handoff process'",
+      "found_on": "FLTIQ-60 (comment, smartlink)",
+      "relationship": "prose-dependency",
+      "authority": "technical-documentation",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["full body -- states 'QA tests from the acceptance criteria. The prototype is a visual reference only: it shows the happy path and will not exercise the failure and permission cases', corroborating FLTIQ-62's own 'Note on the design prototype' that the modal-intercept is scaffolding, not a requirement"]
+    },
+    {
+      "type": "presentation-and-interaction",
+      "id": "FleetIQ Landing.dc.html (Claude Design project 217da859-586a-40cf-a43a-0057dd3925c3, 'Keel Design Wireframe Prototype')",
+      "found_on": "FLTIQ-62 (customfield_10199, Design /Mockup Links)",
+      "relationship": "primary",
+      "authority": "presentation-and-interaction",
+      "retrieved_at": "2026-09-18T00:00:00Z",
+      "fields_used": ["Full file content read via the Claude Design MCP (DesignSync: get_project + list_files + get_file), per the dependency resolution gate (1F.2) added to this skill after an earlier session's connection outage. Confirmed verbatim: hero headline/subhead/badge, three hero statistics, six capability card titles+bodies, the capabilities section heading ('Built for fleets that outgrew the spreadsheet.'), the hierarchy section heading+intro ('Group once. Configure the group.' -- found on a requester-supplied screenshot cross-check, not on the first HTML pass), hierarchy explorer static node data, the two 'Create account'/'Sign in' intercept-modal bodies (matching FLTIQ-62's own 'Note on the design prototype'), and one line -- 'Free while you set up your first fleet. No card required.' -- with no counterpart in any Jira/PRD source and in tension with the story's own 'Out of scope: Pricing ... none is in MVP1' (see conflicts[] CF-002)."]
+    }
+  ],
+  "acceptance_criteria": [
+    {"id": "unbracketed-1", "origin": "backlog", "statement": "Unauthenticated visitor opens root URL -> landing page served, no sign-in required", "source_ref": "FLTIQ-62 AC field", "tr": ["TR-001"]},
+    {"id": "unbracketed-2", "origin": "backlog", "statement": "Click Create account (header/hero/closing) -> arrive at sign-up screen", "source_ref": "FLTIQ-62 AC field", "tr": ["TR-004"]},
+    {"id": "unbracketed-3", "origin": "backlog", "statement": "Click Sign in -> arrive at sign-in screen", "source_ref": "FLTIQ-62 AC field", "tr": ["TR-005"]},
+    {"id": "unbracketed-4", "origin": "backlog", "statement": "Already-authenticated visitor opens root URL -> taken to home page, not landing page", "source_ref": "FLTIQ-62 AC field", "tr": ["TR-002"]},
+    {"id": "unbracketed-5", "origin": "backlog", "statement": "Hierarchy explorer node selection updates detail panel, no reload, no FleetIQ API call", "source_ref": "FLTIQ-62 AC field", "tr": ["TR-008"]},
+    {"id": "TIA-AC-74", "origin": "prd", "statement": "360px viewport -> no horizontal scroll, no truncation/overlap", "source_ref": "PRD 1 section 8 (verbatim, 'in this document'); also FLTIQ-52 AC field ('each screen in this epic')", "tr": ["TR-011"]},
+    {"id": "TIA-AC-77", "origin": "prd", "statement": "Keyboard only -> every link, anchor, and the hierarchy explorer reachable/operable, visible focus, no keyboard trap", "source_ref": "PRD 1 section 8 (verbatim, 'in this document'); also FLTIQ-53 AC field ('each flow in this epic')", "tr": ["TR-012"]},
+    {"id": "TIA-AC-80", "origin": "prd", "statement": "Contrast >=4.5:1 normal text, >=3:1 large text/control boundaries", "source_ref": "PRD 1 section 8 (verbatim, 'in this document'); also FLTIQ-53 AC field ('every screen in this epic')", "tr": ["TR-013"]},
+    {"id": "unbracketed-6", "origin": "backlog", "statement": "Every token/component/rule on the page comes from the shared design system, not page-specific styling", "source_ref": "FLTIQ-62 AC field, cites [FLTIQ-60]", "tr": ["TR-015"]},
+    {"id": "unbracketed-7", "origin": "backlog", "statement": "No copy claims a capability the product does not yet support in MVP1", "source_ref": "FLTIQ-62 AC field", "tr": ["TR-016"]},
+    {"id": "TIA-AC-81", "origin": "prd", "statement": "Usable at 200% browser zoom, no content/function lost", "source_ref": "PRD 1 section 8; FLTIQ-53 AC field ('each screen is opened') -- NOT individually cited in FLTIQ-62's own AC field despite epic-wide scope; see spec.md Testability Review", "tr": ["TR-014"]}
+  ],
+  "dependencies": [
+    {"ref": "FLTIQ-60", "kind": "jira-issue", "discovered_in": "FLTIQ-62 description (prose)", "status": "resolved", "note": "Status: Done. Design system tokens/component library exist; landing page must build on them (TR-015). The design source itself is built entirely on Keel design-system tokens/components, corroborating this."},
+    {"ref": "FLTIQ-33", "kind": "jira-issue", "discovered_in": "FLTIQ-62 description (prose)", "status": "resolved", "note": "Sign-up screen. Story states it 'need not exist before this page is built' -- see spec.md Entry Criteria and Testability Review for the resulting test-execution caveat on TR-004."},
+    {"ref": "FLTIQ-35", "kind": "jira-issue", "discovered_in": "FLTIQ-62 description (prose)", "status": "resolved", "note": "Sign-in screen. Same caveat as FLTIQ-33, applies to TR-005."},
+    {"ref": "FLTIQ-45", "kind": "jira-issue", "discovered_in": "FLTIQ-60 description (prose: 'Blocks: FLTIQ-45')", "status": "resolved", "note": "Navigation shell (post-auth). Informational only -- the public landing page does not use the navigation shell; not applicable to this story's test basis."},
+    {"ref": "FLTIQ-15", "kind": "jira-issue", "discovered_in": "FLTIQ-29 (Epic) description (prose)", "status": "resolved", "note": "PostgreSQL tenant isolation. Epic-wide infra dependency; not applicable -- the landing page makes no API/data calls."},
+    {"ref": "FLTIQ-19", "kind": "jira-issue", "discovered_in": "FLTIQ-29 (Epic) description (prose)", "status": "resolved", "note": "Outbound email path. Epic-wide infra dependency; not applicable to this story."}
+  ],
+  "conflicts": [
+    {
+      "id": "CF-001",
+      "source_a": {"statement": "'Covers: no PRD requirement — this page was missing from the PRD and is captured here'", "authority": "scope-and-story-acceptance", "ref": "FLTIQ-62 description"},
+      "source_b": {"statement": "Three of FLTIQ-62's own acceptance criteria carry bracketed PRD-origin ids: [TIA-AC-74], [TIA-AC-77], [TIA-AC-80]", "authority": "detailed-requirements", "ref": "FLTIQ-62 AC field, cross-checked verbatim against PRD 1 (Confluence 14057474) and sibling stories FLTIQ-52/FLTIQ-53"},
+      "domain": "source classification (page-specific vs. cross-cutting requirement)",
+      "outcome": "Not a genuine conflict. PRD 1 and its epic-wide child stories (FLTIQ-52, FLTIQ-53) state these three criteria apply to 'each screen/flow in this document/epic' -- a scope that includes the landing page even though the page itself has no dedicated PRD section. The story's 'no PRD requirement' statement is accurate for page-specific content; it does not exempt the page from cross-cutting PRD requirements.",
+      "status": "resolved-in-source"
+    },
+    {
+      "id": "CF-002",
+      "source_a": {"statement": "\"Out of scope: Pricing, documentation, blog, contact form, demo request, and analytics — none is in MVP1\"", "authority": "scope-and-story-acceptance", "ref": "FLTIQ-62 description, Scope section"},
+      "source_b": {"statement": "The hero section's design includes the line \"Free while you set up your first fleet. No card required.\" directly beneath the calls to action", "authority": "presentation-and-interaction", "ref": "FleetIQ Landing.dc.html (Claude Design source)"},
+      "domain": "scope (whether pricing/commercial-terms content ships on this page)",
+      "outcome": "Unresolved. The story's own scope statement explicitly excludes pricing content from MVP1, and per the constitution's domain-based precedence policy, scope-and-story-acceptance -- not presentation-and-interaction -- governs 'scope of this cycle'; presentation-and-interaction governs only 'layout, labels, interaction detail'. Whether 'Free ... No card required' counts as excluded pricing content, or is incidental microcopy the scope exclusion did not intend to reach, is a business-intent question neither source settles. Not resolved in source; not silently decided.",
+      "status": "unresolved"
+    }
+  ],
+  "missing_sources": [
+    {"ref": "FleetIQ Decision Log — Platform UI/UX (UX-D1 to UX-D51)", "kind": "decision-log", "cited_by": "PRD 1, Related Documents", "reason": "Cited by name; no retrievable Confluence page or Jira attachment found under this or a similar title. Individual decision numbers (e.g. UX-D25, UX-D26) appear only as inline citations within PRD 1's own body, not as a standalone document.", "impact": "Low for this story -- no FLTIQ-62 material statement cites a UX-D decision number directly."},
+    {"ref": "FleetIQ Decision Log — Pre-Onboarding and Device Registrar (D1 to D27)", "kind": "decision-log", "cited_by": "PRD 1, Related Documents", "reason": "Cited by name; not retrievable.", "impact": "None identified -- out of this story's domain (pre-onboarding/device registrar)."},
+    {"ref": "FleetIQ Architecture and MVP1 (PDF)", "kind": "technical-documentation", "cited_by": "PRD 1, Related Documents", "reason": "Cited by name; not retrievable.", "impact": "None identified -- this story has no backend/architecture-dependent behaviour (explicitly no API call)."},
+    {"ref": "FleetIQ MVP Proposal 1 (PDF)", "kind": "product-context", "cited_by": "PRD 1, Related Documents", "reason": "Cited by name; not retrievable.", "impact": "Low -- story's own scope statement is self-sufficient for this page's business intent."},
+    {"ref": "fleetiq-tenant-first-run-two-track-flow (HTML diagram)", "kind": "technical-documentation", "cited_by": "PRD 1, Related Documents", "reason": "Cited by name; not retrievable.", "impact": "None -- the design source's own closing-section copy ('Sign up, verify your email, name your organisation') independently settles the exact three-step wording (TR-009)."},
+    {"ref": "FleetIQ Device Registrar PRD (or equivalent)", "kind": "detailed-requirements", "cited_by": "the design source's hero statistic '500+ devices onboarded in a single import' -- a capability claim about bulk device import, which belongs to the Device Registrar epic, not the Tenant/Identity epic this ticket resolves", "reason": "Out of scope for this ticket's source resolution (a different epic's PRD); not fetched.", "impact": "Low-Medium -- this specific statistic's accuracy is unverified against its actual governing source; see spec.md TR-006 and Testability Review."}
+  ],
+  "unverified_cache": []
+}
