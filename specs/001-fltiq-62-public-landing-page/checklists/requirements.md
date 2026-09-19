@@ -16,6 +16,16 @@
 - [x] Every source conflict appears in both §11a and `conflicts[]`
 - [x] Ticket URL and fetch datetime recorded
 
+## UI Element Enumeration
+
+*(Added 2026-09-19 along with the skill's §15a retrofit — see spec.md Change Log)*
+
+- [x] Pass 0 lists every file in the design project, each with an in-scope decision and a reason — 12 files, 1 in scope (`FleetIQ Landing.dc.html`), 11 excluded by name (spec.md §15a)
+- [x] Every pass in §15a states its count and how that count was derived
+- [x] Every UI element in every in-scope screen appears in §15a with a disposition
+- [x] Every interactive-element row names a behaviour, not a presence
+- [x] §3a states the acceptance-criterion count per source and how it was derived
+
 ## Testability
 
 - [x] Every TR is independently verifiable from outside the system
