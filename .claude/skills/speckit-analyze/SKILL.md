@@ -109,7 +109,8 @@ Load only what each pass needs.
 cases (§5); test data (§6); environment matrix (§7); NFRs (§8); risk analysis
 (§9); exit criteria (§10); testability review (§11); the acceptance-criteria
 index (§3a); source conflicts (§11a); evidence classification (§12); blocking
-questions (§13a); source inventory (§15).
+questions (§13a); source inventory (§15); the `Status` header and, if present,
+`## Change Log`.
 
 **From `source-manifest.json`** *(schema 2.0 only, if present)*: resolved
 sources and their authority, `conflicts[]` with status, `missing_sources[]` with
@@ -119,7 +120,8 @@ absent from the approved source set.
 
 **From `plan.md`**: automation candidacy rules and target coverage (§B1); stack
 (§B2); framework structure (§B3); design rules (§B4); test data strategy (§B5);
-reporting and quality gate (§B6); the manual scope decided in §A3.
+reporting and quality gate (§B6); the manual scope decided in §A3; the
+`Status` header and, if present, `## Change Log`.
 
 **From `test-cases.json`**: every case's id, title, scenario, requirements,
 type, priority, automatable, automation_status, test_file, steps.
@@ -220,14 +222,43 @@ High-signal findings only. Cap at 50; summarise the overflow.
 - A requirement classed `OBSERVED` that cites no observation evidence, or no
   approved source mandating the behaviour.
 
+#### H. Post-approval change control *(constitution XIII)*
+
+- An artifact whose `Status` reads `Approved` but whose `## Change Log` has a
+  **Scope change**/**New requirement** entry with no fresh `Approved by`/
+  `Approved on` dated on or after it — the gate was bypassed. Always CRITICAL:
+  everything downstream is trusting an approval that no longer covers what
+  the artifact currently says.
+- A `## Change Log` entry with no classification, or no blast-radius
+  statement — an incomplete change record, itself a defect per constitution
+  XIII Step 3.
+- A `## Change Log` entry whose blast-radius column claims "none" or "not
+  affected," but the traceability model built in step 3 shows a `TC-xxx` /
+  task / test that does in fact reference the changed `TR-xxx` — the blast
+  radius was checked incorrectly, not skipped honestly.
+- An artifact edited after `Approved` (its content disagrees with what an
+  earlier `Change Log`-less version would have said, if inferable from
+  context — e.g. a `TR-xxx` referenced in `tasks.md`/`test-cases.json` no
+  longer matches its current text in `spec.md`) with **no** `## Change Log`
+  section at all.
+
+When this session is being run specifically to check the blast radius for a
+named recent change (the user says something like "I just updated TR-008,
+what does that affect"), treat this category as the primary pass: report,
+per Change Log entry, exactly which `TC-xxx`/task/test the model shows
+referencing that `TR-xxx`, and whether each still holds, needs a targeted
+update, or is now orphaned — this *is* constitution XIII Step 4's check.
+
 ### 5. Severity
 
 - **CRITICAL** — violates a constitution MUST; a P1 requirement with zero
-  coverage; a case claiming `Automated` with no test behind it
+  coverage; a case claiming `Automated` with no test behind it; a bypassed
+  post-approval gate (category H)
 - **HIGH** — a requirement with no coverage; a missing negative path on a P1
-  scenario; conflicting requirements; an untestable expected result
+  scenario; conflicting requirements; an untestable expected result; a
+  Change Log blast-radius claim contradicted by the traceability model
 - **MEDIUM** — terminology drift; missing NFR coverage; priority mismatch;
-  duplicate cases; stale workbook
+  duplicate cases; stale workbook; an incomplete Change Log entry
 - **LOW** — wording, minor redundancy, cosmetic inconsistency
 
 ### 6. Report
@@ -268,6 +299,9 @@ One row per finding, with stable ids prefixed by category initial.
 - Ambiguity in the basis → run `/speckit-clarify`
 - Automation drift → re-run the exporter, or fix `automation_status` in
   `test-cases.json`, then regenerate the workbook
+- Bypassed gate (category H) → the artifact's owner re-classifies the Change
+  Log entry, or re-approves it (fresh `Approved by`/`Approved on`) — no
+  downstream phase should proceed in the meantime
 - Only LOW/MEDIUM → safe to proceed, with the improvements listed
 
 Give explicit commands, not general advice.

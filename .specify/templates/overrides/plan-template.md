@@ -8,6 +8,22 @@
 > automation**. Both must be filled: the split between them is a decision, not
 > an oversight.
 
+## Change Log
+
+<!--
+  Required once Status first becomes Approved -- constitution XIII,
+  Post-Approval Change Control. Same rule as spec.md's Change Log: Clarification
+  /Correction may keep Status: Approved with just this row; Scope change/New
+  requirement reverts Status to In Review until re-approved. Also log here
+  when an upstream spec.md change (its own Change Log) turns out to affect
+  this plan's A0 table, coverage targets, or design rules -- state the
+  blast-radius finding even when the answer is "this plan is unaffected."
+-->
+
+| Date | Classification | What changed | Blast radius | Status impact |
+|------|-----------------|--------------|---------------|----------------|
+| [DATE] | [Clarification/Correction/Scope change/New requirement] | [What changed and why] | [What /speckit-analyze found downstream (test-cases.json, tasks.md, automation), or "none yet"] | [Stayed Approved / Reverted to In Review, re-approved DATE by NAME] |
+
 ## Summary
 
 [What is being tested, the chosen approach in 3-5 sentences, and the headline

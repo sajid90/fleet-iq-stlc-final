@@ -107,6 +107,19 @@ answers. Do not answer from observation a question only an approved source can
 settle. A user-facing question is reserved for what only the requester can
 decide: scope, priority, business intent, or an undefined requirement.
 
+**Design sources are enumerated, not read.** A `presentation-and-interaction`
+source (a design mockup or prototype) carries most of its requirements through
+attributes, sequence, repetition and data fields — a link's `href` target,
+the same label appearing in three places, a field that looks like another
+field but is not — not through prose a reader would naturally notice while
+reading top to bottom. Reading such a source as a document rather than
+inventorying it as a structure is a named failure mode: it reliably passes
+over exactly this content. `/speckit-specify` enumerates a design source
+structurally (text, interactive behaviour and its resulting effect, repeated
+labels compared across their locations, data values, conditionals, semantic
+attributes) before drafting any requirement from it, per its own procedure —
+never derives requirements from a design source by reading it as narrative.
+
 ### III. Context Flows Forward
 
 Each phase carries forward the resolved context of the phase before it, so a
@@ -225,6 +238,56 @@ actually executed. A break anywhere in
 `Jira AC → TR-xxx → TC-xxx → Txxx → test function` is a defect in the process
 and is reported rather than closed over.
 
+### XIII. Post-Approval Change Control
+
+An approved artifact does not become mutable by default. A gap found later,
+or a source that turns out to say something different than first recorded, is
+handled as a **change**, never as a silent correction — the same discipline
+that governs source conflicts (principle I) and undefined requirements
+(principle II) applies equally to editing something already signed off.
+
+**Step 1 — Classify the edit before making it.**
+
+| Classification | Definition | Does it change a decision a human already approved? |
+|---|---|---|
+| **Clarification** | A source-verified detail that was always true, newly captured | No |
+| **Correction** | The artifact stated something wrong about a source that has not itself changed | No |
+| **Scope change** | An approved source's own content changed (a Jira field edited, a decision reversed, a design revised) | Yes |
+| **New requirement** | Content enters scope that no approved source's previously-resolved content covered | Yes |
+
+**Step 2 — Apply the matching rule.**
+
+- **Clarification / Correction** — the artifact's `Status` may remain
+  `Approved`. No new `Approved by`/`Approved on` is required. A dated entry in
+  the artifact's `## Change Log` is still mandatory (Step 3).
+- **Scope change / New requirement** — the artifact's `Status` reverts to
+  `In Review` immediately, and every phase downstream of it halts at its own
+  Step 0 entry gate until a human re-approves with a fresh `Approved by`/
+  `Approved on`. This is the same gate as the first approval, not a lesser
+  one — the Quality Gate criteria in §XI.b apply exactly as they did then.
+
+**Step 3 — Every post-approval edit is logged, never silent.** Every artifact
+carrying a `Status:` header maintains a `## Change Log` section: date,
+classification, what changed and why, and the blast-radius statement from
+Step 4. An edit to an approved artifact with no matching Change Log entry is
+itself a defect, regardless of how small the edit was.
+
+**Step 4 — Blast radius is checked, not assumed.** Before reporting a
+post-approval edit complete, run `/speckit-analyze` (or, when the drift is at
+the automation layer rather than the requirement layer, `/speckit-converge`)
+against the changed artifact and record what it found: which downstream
+`TR-xxx` / `TC-xxx` / task / test already encodes the pre-change content, and
+whether each is now stale, still valid, or unaffected. "Nothing downstream
+exists yet" is itself a valid, statable finding from that check — not a step
+to skip because the answer seems obvious.
+
+**Step 5 — Downstream updates are targeted, not wholesale.** A changed
+`TR-xxx` requires updating only the `TC-xxx` / tasks / tests that Step 4
+actually found referencing it — never a full re-run of the phase that
+produced them by default. A full phase re-run is warranted only when the
+blast radius genuinely spans most of that artifact, and that judgment is
+stated, not assumed.
+
 ## Governance
 
 This constitution supersedes convention, habit, and convenience. Amendments are
@@ -238,4 +301,23 @@ compliance. Where a deviation is genuinely warranted, it is recorded in the
 plan's Complexity Tracking table with the simpler alternative that was rejected
 and why. Undocumented deviation is not permitted.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-17
+**Version**: 1.1.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-19
+
+### Amendment history
+
+- **1.1.0** (2026-09-19, MINOR): Added principle XIII, Post-Approval Change
+  Control. Prompted by FLTIQ-62's own `spec.md` needing a real post-approval
+  edit (the §15a retrofit's one new finding) with no written rule for how to
+  classify it, whether it needed re-approval, or how to check what it might
+  affect downstream — that call had been made ad hoc, in conversation, twice
+  in a row. Adds a classification step, a matching re-gate/lightweight-note
+  rule, a mandatory `## Change Log` on every `Status`-bearing artifact, and a
+  required blast-radius check via `/speckit-analyze`/`/speckit-converge`
+  before any post-approval edit is reported complete.
+- **1.0.1** (2026-09-19, PATCH): Clarified principle II — design and
+  presentation sources are consumed by enumeration, not by reading as prose.
+  Prompted by FLTIQ-62's requirement analysis missing eight design-sourced
+  facts (section headings, link behaviour, repeated controls, CTA order, and
+  two data fields that looked alike) on the first pass, all caught only by
+  manual re-review. Changes no principle; states explicitly what "first-class
+  input" already implied about how a design source must be consumed.

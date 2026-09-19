@@ -19,6 +19,24 @@
 
 **Deliverables**: `test-cases.json`, `test-cases.xlsx`
 
+## Change Log
+
+<!--
+  Constitution XIII, Post-Approval Change Control. tasks.md/test-cases.json
+  don't carry a Status: header the way spec.md/plan.md do, but the same
+  discipline applies once test cases have been through the test-case gate
+  (constitution XI.a): a Clarification/Correction to a case may be made in
+  place with a row here; a Scope change/New requirement (the case now
+  asserts something different, or a new case is needed) requires the case's
+  owner to re-review it before /speckit-implement/-converge treats it as
+  trustworthy again. Also log here whenever a spec.md/plan.md Change Log
+  entry's blast-radius check found a TC-xxx/task here that needed updating.
+-->
+
+| Date | Classification | What changed | Blast radius | Re-reviewed? |
+|------|-----------------|--------------|---------------|----------------|
+| [DATE] | [Clarification/Correction/Scope change/New requirement] | [Which TC-xxx/task changed and why] | [What /speckit-converge or /speckit-analyze found in automation, or "none yet"] | [No re-review needed / Re-reviewed DATE by NAME] |
+
 ## Task Format (REQUIRED)
 
 ```text

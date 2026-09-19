@@ -51,6 +51,12 @@ still open, halt and say so — run `/speckit-converge` first, or proceed with
 `--force-gate` and record the override in the execution report. Skip this
 check quietly if `tasks.md` has no convergence section yet (nothing to check).
 
+**Post-approval change check (constitution XIII).** Also check `spec.md` and
+`plan.md`'s `## Change Log` sections for a **Scope change**/**New
+requirement** entry with no fresh `Approved by`/`Approved on` on or after it.
+If found, halt: a Go/No-Go verdict built while an upstream gate stands
+bypassed is not defensible evidence, whatever the suite reports.
+
 Then load context (skip quietly if a feature is not yet initialised):
 
 - `.specify/scripts/bash/check-prerequisites.sh --json --paths-only` for `FEATURE_DIR`

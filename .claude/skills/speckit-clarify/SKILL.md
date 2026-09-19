@@ -90,6 +90,19 @@ asks *who defines this*, not *what would you like*.
 
 2. **IF EXISTS**: load `.specify/memory/constitution.md` for the QA principles.
 
+**Post-approval change note (constitution XIII).** Check `spec.md`'s `Status`.
+If it already reads `Approved` (this run is resolving an open §13a/§13b
+question the team answered after the original analysis — the common case for
+a re-run, not the exception), every answer integrated in step 6 below is a
+post-approval edit and needs the same treatment: classify it (an answer that
+only supplies the concrete form of something already DEFINED/OBSERVED is a
+**Clarification**; an answer that changes what the product actually does, or
+resolves a conflict by picking a side no source had adjudicated, is a **Scope
+change**), add the row to `spec.md`'s `## Change Log`, and — for a Scope
+change — revert `Status` to `In Review` and say plainly that re-approval is
+needed before `/speckit-plan` proceeds. Do not leave `Status: Approved`
+standing on a spec that just had its scope changed underneath it.
+
 3. Load `spec.md` and run a structured ambiguity scan against the taxonomy
    below. Mark each category **Clear / Partial / Missing**. Keep the coverage map
    internal unless no questions will be asked.
@@ -265,6 +278,13 @@ asks *who defines this*, not *what would you like*.
      marker** and write the resolved content in place.
    - If it invalidates an earlier statement, **replace** it — never leave
      contradictory text behind.
+   - **If `spec.md`'s `Status` was already `Approved`** (per the post-approval
+     change note above), add the corresponding row to `## Change Log` in the
+     same write — classification, what changed, and the blast-radius result
+     (run `/speckit-analyze` once at the end of step 6 rather than per-answer,
+     and back-fill each row's blast-radius column from that single pass). Set
+     `Status: In Review` if any accepted answer this session classified as a
+     Scope change.
    - Save `spec.md` after each integration (atomic overwrite). Preserve heading
      hierarchy and do not reorder unrelated sections.
    - Keep each insertion minimal and testable.

@@ -90,6 +90,16 @@ note the planning gate recorded. If the test plan has not been approved, halt
 and say which artifact is waiting and what setting `Status: Approved` means.
 `--force-gate` proceeds and records the override in `tasks.md`.
 
+**Post-approval change check (constitution XIII).** Apply the same check to
+**both** `spec.md` and `plan.md`: if either's `Status` reads `Approved` but
+its `## Change Log` has a **Scope change**/**New requirement** entry with no
+fresh `Approved by`/`Approved on` dated on or after it, halt and name the
+specific entry — proceeding would build test cases on a basis whose own gate
+was bypassed. A `Clarification`/`Correction` entry does not block. If test
+cases already exist for a `TR-xxx` that a logged change touched, this run's
+job is the targeted update Step 5 of constitution XIII describes, not a
+wholesale re-generation — record the update in `tasks.md`'s own Change Log.
+
 ### Step 2: Load context
 
 From `FEATURE_DIR`:

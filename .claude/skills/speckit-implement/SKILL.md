@@ -82,6 +82,14 @@ If `tasks.md` is missing or has no tasks, stop and tell the user to run
 automation starts. If `test-cases.json` has not been through the test-case gate,
 halt and say so. `--force-gate` proceeds and records the override in `tasks.md`.
 
+**Post-approval change check (constitution XIII).** Also check `spec.md` and
+`plan.md`'s `## Change Log` sections: a **Scope change**/**New requirement**
+entry with no fresh `Approved by`/`Approved on` on or after it means a gate
+upstream was bypassed — halt and name it, since writing automation now would
+implement behaviour a human hasn't actually re-approved. If `tasks.md`'s own
+Change Log records a targeted update to specific `TC-xxx`/tasks, implement
+only those — do not treat it as license to rewrite unrelated, unchanged tests.
+
 ### Step 2: Load context
 
 - **Required** `tasks.md` — the work breakdown, phases, dependencies, `[P]` markers
