@@ -1,6 +1,6 @@
 # Test Cases: FLTIQ-62 — Build the public landing page
 
-**Generated**: 2026-09-21T16:30:00 | **Total**: 43
+**Generated**: 2026-09-21T20:45:00 | **Total**: 43
 
 > Generated from `test-cases.json`. Do not edit by hand — edit the JSON and re-export.
 
@@ -8,7 +8,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S1 | **Requirements**: TR-001 | **Jira AC**: unbracketed-1
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc001_unauthenticated_visitor_sees_landing_page`)
 
 **Preconditions**:
 - No session cookie/token present (fresh browser context)
@@ -26,7 +26,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S1 | **Requirements**: TR-004 | **Jira AC**: unbracketed-2
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc002_header_create_account_navigates_to_signup`)
 
 **Preconditions**:
 - No active session
@@ -44,7 +44,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S1 | **Requirements**: TR-004 | **Jira AC**: unbracketed-2
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc003_hero_create_account_navigates_to_signup`)
 
 **Preconditions**:
 - No active session
@@ -62,7 +62,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S1 | **Requirements**: TR-004 | **Jira AC**: unbracketed-2
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc004_closing_create_account_navigates_to_signup`)
 
 **Preconditions**:
 - No active session
@@ -80,7 +80,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S1 | **Requirements**: TR-003
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc005_header_product_mark_scrolls_to_top`)
 
 **Preconditions**:
 - Landing page loaded
@@ -88,9 +88,11 @@
 
 | # | Action | Expected |
 |---|--------|----------|
-| 1 | Click the "FleetIQ" product mark (icon + wordmark) in the header | The page scrolls back to the top (`#top`) |
+| 1 | Inspect the header product mark's square icon | The square icon contains the letter "F" beside the "FleetIQ" wordmark |
+| 2 | Click the "FleetIQ" product mark (icon + wordmark) in the header | The page scrolls back to the top (`#top`) |
+| 3 | Scroll down again and click the same product mark a second time | The page scrolls back to the top again — the behaviour is not limited to the first click |
 
-**Expected result**: The page returns to its topmost scroll position
+**Expected result**: The mark renders as a square "F" icon beside the wordmark, and the page returns to its topmost scroll position every time the mark is clicked, not only on the first click
 
 ---
 
@@ -98,7 +100,7 @@
 
 **Priority**: P3 | **Type**: UI | **Scenario**: S1 | **Requirements**: TR-010
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc006_footer_back_to_top_scrolls_to_top`)
 
 **Preconditions**:
 - Landing page loaded
@@ -107,8 +109,9 @@
 | # | Action | Expected |
 |---|--------|----------|
 | 1 | Click the "Back to top" link in the footer | The page scrolls back to the top (`#top`) |
+| 2 | Scroll down again and click "Back to top" a second time | The page scrolls back to the top again — the behaviour is not limited to the first click |
 
-**Expected result**: The page returns to its topmost scroll position
+**Expected result**: The page returns to its topmost scroll position every time the link is clicked, not only on the first click of a page load
 
 ---
 
@@ -116,7 +119,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S1 | **Requirements**: TR-004
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc007_no_intercepting_modal_on_create_account`)
 
 **Preconditions**:
 - No active session
@@ -135,7 +138,7 @@
 
 **Priority**: P3 | **Type**: UI | **Scenario**: S1 | **Requirements**: TR-010
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc008_footer_mark_is_non_interactive`)
 
 **Preconditions**:
 - Landing page loaded
@@ -153,7 +156,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S2 | **Requirements**: TR-002 | **Jira AC**: unbracketed-4
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc009_authenticated_visitor_redirected_home`)
 
 **Preconditions**:
 - A valid authenticated session exists (real UI sign-in via FLTIQ-35, research.md R5)
@@ -171,7 +174,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S2 | **Requirements**: TR-005 | **Jira AC**: unbracketed-3
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc010_header_sign_in_navigates_to_signin`)
 
 **Preconditions**:
 - No active session
@@ -189,7 +192,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S2 | **Requirements**: TR-005 | **Jira AC**: unbracketed-3
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc011_hero_sign_in_navigates_to_signin`)
 
 **Preconditions**:
 - No active session
@@ -207,7 +210,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S2 | **Requirements**: TR-005 | **Jira AC**: unbracketed-3
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc012_closing_sign_in_navigates_to_signin`)
 
 **Preconditions**:
 - No active session
@@ -225,7 +228,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S3 | **Requirements**: TR-008 | **Jira AC**: unbracketed-5
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc014_hierarchy_default_selection_floor1`)
 
 **Preconditions**:
 - Landing page loaded fresh
@@ -243,7 +246,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S3 | **Requirements**: TR-008 | **Jira AC**: unbracketed-5
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc015_selecting_node_updates_detail_panel`)
 
 **Preconditions**:
 - Landing page loaded
@@ -262,7 +265,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S3 | **Requirements**: TR-008 | **Jira AC**: unbracketed-5
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc016_no_api_call_during_hierarchy_interaction`)
 
 **Preconditions**:
 - Landing page loaded
@@ -280,7 +283,7 @@
 
 **Priority**: P1 | **Type**: Data | **Scenario**: S3 | **Requirements**: TR-008 | **Jira AC**: unbracketed-5
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc017_meta_distinct_from_devices`)
 
 **Preconditions**:
 - Landing page loaded
@@ -300,7 +303,7 @@
 
 **Priority**: P1 | **Type**: UI | **Scenario**: S3 | **Requirements**: TR-008
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc018_selected_row_visually_highlighted`)
 
 **Preconditions**:
 - Landing page loaded
@@ -317,7 +320,7 @@
 
 **Priority**: P1 | **Type**: Functional | **Scenario**: S3 | **Requirements**: TR-008
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc019_zero_device_boundary_node`)
 
 **Preconditions**:
 - Landing page loaded
@@ -334,7 +337,7 @@
 
 **Priority**: P1 | **Type**: Data | **Scenario**: S3 | **Requirements**: TR-008
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc020_each_node_exact_note_text`)
 
 **Preconditions**:
 - Landing page loaded
@@ -355,7 +358,7 @@
 
 **Priority**: P1 | **Type**: Compatibility | **Scenario**: S3 | **Requirements**: TR-008, TR-011 | **Jira AC**: unbracketed-5, TIA-AC-74
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc021_largest_value_at_360px`)
 
 **Preconditions**:
 - Landing page loaded at a 360px viewport
@@ -372,7 +375,7 @@
 
 **Priority**: P1 | **Type**: Accessibility | **Scenario**: S4 | **Requirements**: TR-011 | **Jira AC**: TIA-AC-74
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc022_no_horizontal_scroll_at_360px`)
 
 **Preconditions**:
 - Browser viewport set to 360px width
@@ -390,7 +393,7 @@
 
 **Priority**: P1 | **Type**: Accessibility | **Scenario**: S4 | **Requirements**: TR-012 | **Jira AC**: TIA-AC-77
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc023_keyboard_reachability_and_focus_indicator`)
 
 **Preconditions**:
 - Landing page loaded
@@ -408,7 +411,7 @@
 
 **Priority**: P1 | **Type**: Accessibility | **Scenario**: S4 | **Requirements**: TR-012 | **Jira AC**: TIA-AC-77
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc024_no_keyboard_trap`)
 
 **Preconditions**:
 - Landing page loaded
@@ -425,7 +428,7 @@
 
 **Priority**: P1 | **Type**: Accessibility | **Scenario**: S4 | **Requirements**: TR-013 | **Jira AC**: TIA-AC-80
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc025_contrast_meets_wcag_aa`)
 
 **Preconditions**:
 - Landing page loaded
@@ -442,7 +445,7 @@
 
 **Priority**: P2 | **Type**: Accessibility | **Scenario**: S4 | **Requirements**: TR-014 | **Jira AC**: TIA-AC-81
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc026_usable_at_200_percent_zoom`)
 
 **Preconditions**:
 - Viewport halved (1920x1080 -> 960x540) to emulate 200% zoom, per research.md R2
@@ -459,7 +462,7 @@
 
 **Priority**: P1 | **Type**: Accessibility | **Scenario**: S4 | **Requirements**: TR-012 | **Jira AC**: TIA-AC-77
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc027_hierarchy_keyboard_operability`)
 
 **Preconditions**:
 - Landing page loaded
@@ -478,7 +481,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-003
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc028_header_cta_order`)
 
 **Preconditions**:
 - Landing page loaded
@@ -495,7 +498,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-006
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc029_hero_exact_copy`)
 
 **Preconditions**:
 - Landing page loaded
@@ -515,7 +518,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-006
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc030_hero_cta_order`)
 
 **Preconditions**:
 - Landing page loaded
@@ -532,7 +535,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-007
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc031_capabilities_exact_copy`)
 
 **Preconditions**:
 - Landing page loaded
@@ -550,7 +553,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-019
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc032_hierarchy_exact_copy`)
 
 **Preconditions**:
 - Landing page loaded
@@ -568,7 +571,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-009
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc033_closing_exact_copy_and_order`)
 
 **Preconditions**:
 - Landing page loaded, scrolled to the closing section
@@ -586,7 +589,7 @@
 
 **Priority**: P3 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-010
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc034_footer_elements_present`)
 
 **Preconditions**:
 - Landing page loaded, scrolled to the footer
@@ -594,8 +597,9 @@
 | # | Action | Expected |
 |---|--------|----------|
 | 1 | Inspect the footer | The "F" icon + "FleetIQ" wordmark, "©ACL Digital", and a "Back to top" link are all present |
+| 2 | Inspect the footer mark's square icon | The square icon contains the letter "F", the same mark as the header |
 
-**Expected result**: All three footer elements are present, structurally distinct from the header (TR-003)
+**Expected result**: All three footer elements are present, with the mark rendering the same square "F" icon as the header, structurally distinct from it (TR-003)
 
 ---
 
@@ -621,7 +625,7 @@
 
 **Priority**: P3 | **Type**: Functional | **Scenario**: S5 | **Requirements**: TR-016 | **Jira AC**: unbracketed-7
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc036_no_overclaiming_capability`)
 
 **Preconditions**:
 - Landing page loaded
@@ -639,7 +643,7 @@
 
 **Priority**: P2 | **Type**: Security | **Scenario**: S5 | **Requirements**: TR-017
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc037_no_analytics_or_tracking`)
 
 **Preconditions**:
 - Network request listener attached
@@ -656,7 +660,7 @@
 
 **Priority**: P2 | **Type**: Functional | **Scenario**: S5 | **Requirements**: TR-017
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc038_no_out_of_scope_content`)
 
 **Preconditions**:
 - Landing page loaded
@@ -673,7 +677,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-018
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc039_hero_free_placeholder_line`)
 
 **Preconditions**:
 - Landing page loaded
@@ -690,7 +694,7 @@
 
 **Priority**: P2 | **Type**: Accessibility | **Scenario**: S4 | **Requirements**: TR-011, TR-014 | **Jira AC**: TIA-AC-74, TIA-AC-81
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc041_360px_combined_with_200_percent_zoom`)
 
 **Preconditions**:
 - Viewport set to 360px width, further halved to emulate 200% zoom (180px-equivalent content area, per research.md R2)
@@ -707,7 +711,7 @@
 
 **Priority**: P3 | **Type**: UI | **Scenario**: S1 | **Requirements**: TR-020
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc042_skeleton_loader_during_auth_resolution`)
 
 **Preconditions**:
 - The auth-check network request is intercepted and delayed (e.g. Playwright route handler) to create a reliably observable loading window
@@ -742,7 +746,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-003
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc044_header_has_capabilities_and_hierarchy_anchors`)
 
 **Preconditions**:
 - Landing page loaded
@@ -759,7 +763,7 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S1 | **Requirements**: TR-003
 
-**Automation**: Not Started
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc045_header_anchors_navigate_to_correct_section`)
 
 **Preconditions**:
 - Landing page loaded

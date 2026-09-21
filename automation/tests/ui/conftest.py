@@ -11,6 +11,7 @@ from __future__ import annotations
 import pytest
 from playwright.sync_api import expect
 
+from automation.pages.landing_page import LandingPage
 from automation.pages.login_page import ExamplePage, ExampleResultPage
 from automation.utils.config import Settings
 
@@ -51,3 +52,12 @@ def example_page(page, settings: Settings) -> ExamplePage:
 @pytest.fixture
 def example_result_page(page, settings: Settings) -> ExampleResultPage:
     return ExampleResultPage(page, settings)
+
+
+# --------------------------------------------------------------------------
+# FLTIQ-62 — public landing page
+# --------------------------------------------------------------------------
+
+@pytest.fixture
+def landing_page(page, settings: Settings) -> LandingPage:
+    return LandingPage(page, settings)

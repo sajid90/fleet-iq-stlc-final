@@ -1,6 +1,7 @@
 # Test Case Development & Automation Tasks: FLTIQ-62 — Build the public landing page
 
 **Test Basis**: [spec.md](./spec.md) | **Test Plan**: [plan.md](./plan.md) | **Date**: 2026-09-19
+**Test-case gate** (constitution XI.a): `test-cases.xlsx` reviewed for adequacy of coverage and approved by Sajid Mohammad on 2026-09-21, covering all 43 cases as they stand after the TR-018/TR-020 updates above.
 
 > STLC Phase 3 — Test Case Development. Produced by `/speckit-tasks`.
 > The **test cases** themselves live in `test-cases.json` (canonical) and
@@ -49,6 +50,9 @@ this file will use once one occurs.)*
 | 2026-09-21 | New requirement | The team answered `spec.md` §13a Q1 (CF-002): TR-018 resolved DEFINED, ships as designed. TC-039 converted from a Blocked placeholder to a real asserting case; task T048 added (Phase 7). TC-043's Blocked entry narrowed to match the related §13b Q3 partial answer -- the shared-JS-bundle risk to the CTAs it originally flagged is resolved, only the explorer's own fallback UI remains unanswered. Test Case Summary and Traceability table updated (Blocked 3 -> 2, Automated 39 -> 40). | No other case/task affected. This mirrors `spec.md`'s own classification -- see its Change Log, same date, for the full resolution and blast-radius reasoning. | Re-review needed once `spec.md`/`plan.md` are re-approved -- this file has no `Status:` gate of its own, but its content now assumes TR-018 is DEFINED |
 | 2026-09-21 | Correction | A user question ("we have six edge cases in spec.md, and have 4 in tasks.md, why?") caught that the Traceability table only ever listed 4 of `spec.md` §5's 6 edge cases (EC-001, EC-003, EC-004, EC-005) -- EC-002 and EC-006 were always covered (TC-014/T019 and TC-019/T023 respectively) but never got their own row, so a reviewer scanning this table alone would have missed that they existed at all. Added both rows. | No coverage changed -- both were already tested; this closes a table-completeness gap, not a testing gap. | Stayed as-is -- no content assertion changed, just a missing row |
 | 2026-09-21 | New requirement | §13b Q2 answered ("skeleton loader") -- the last of the original 4 open questions. `spec.md` created TR-020 (wholly new, not previously named by any source). TC-042 converted from Blocked to a real case; task T049 added (Phase 3). Blocked table down to 1 (TC-043 only). Traceability table's EC-001 row updated from Blocked to real, and a new TR-020 row added. | No other case/task affected. Mirrors `spec.md`'s own classification -- see its Change Log, same date. | Re-review needed once `spec.md`/`plan.md` are re-approved, same as the TR-018 entry above -- this adds to the same pending batch |
+| 2026-09-21 | Correction (coverage gap, not a spec change) | TC-005 and TC-034 extended to assert the product mark's square icon contains "F", after a requester screenshot comparison against the design asked whether the icon matched and whether anything covered it. It did not: TR-003 ("a square icon containing \"F\" beside the \"FleetIQ\" wordmark") and TR-010 ("the same square \"F\" icon") both state the glyph, but every existing case asserted only behaviour (TC-005/TC-008) or the wordmark text (TC-034). No new `TC-xxx` added, per the standing preference to extend existing cases. | Both now **fail**: the icon renders as an empty square (no text node, no `::before` content, no background image) — header 11x11px, footer 9x9px, `rgb(11,63,168)`. Logged as defect **D8** in `reports/test-report-cycle-1.md`. `landing_page.py` gained `header_mark_icon_text()`/`footer_mark_icon_text()`, which return the glyph text so the test owns the assertion (constitution VII). `spec.md` §14's TR-003/TR-010 rows updated. | No requirement re-review needed — no `TR-xxx` text changed |
+| 2026-09-21 | Correction (coverage gap, not a spec change) | TC-005 and TC-006 extended to exercise a **second** scroll-and-click cycle, after a user question asked why repeating the sequence failed. Both cases previously asserted a single click on a freshly-loaded page, which is all their steps described — so both passed while the real behaviour was broken. TR-003 and TR-010 state the scroll-to-top behaviour with no first-click-only qualifier, and a control experiment (a plain `<a href="#top">` page) re-scrolled on every click, confirming the app is breaking standard browser behaviour rather than the requirement being over-read. No new `TC-xxx` added — the existing cases now cover what their requirements always required. | Both cases now **fail** on attempt 2 (`scrollY=850`, `url=…/#top`), exposing a Product Defect: once the fragment is `#top`, any further `href="#top"` click is a same-fragment navigation the app no-ops. Confirmed to affect *both* elements and to cross between them (clicking the header mark also disables the footer link). `spec.md` §14's TR-003/TR-010 Automation column updated; `landing_page.py`'s `wait_for_scroll_top()` replaced by `scrolled_to_top_within()`, which returns data so the test owns the assertion (constitution VII). | No re-review of requirements needed — no `TR-xxx` text changed; this is coverage of existing text plus a defect finding |
+| 2026-09-21 | Correction | `/speckit-implement` executed all 39 non-blocked, non-manual tasks against the actual running dev server (not just the design mockup). All checkboxes above updated to `[X]` with a pass/fail note per task, except T038, left unchecked: `test-cases.json` (authoritative) records TC-035 as `automatable: false`/Manual, contradicting T038's own "automated half only" premise -- writing a partial automated audit would have silently overridden that record rather than corrected it first. 16 of 41 implemented cases fail against the real build (Product Defects, not test defects -- see the Completion Report for the full list); tests were kept as spec'd, not weakened, per constitution VI. | `test-cases.json`'s `automation_status`/`test_file` fields and `spec.md` §14's Automation column updated to match (same date, their own records). No `TR-xxx` or `TC-xxx` content changed -- this is execution evidence, not a scope edit. | No re-review needed -- this is a status update, not a change to what any case asserts |
 
 ## Task Format (REQUIRED)
 
@@ -70,11 +74,11 @@ this file will use once one occurs.)*
 
 **Purpose**: make the suite runnable before any test is written.
 
-- [ ] T001 Install automation dependencies from `requirements.txt`
-- [ ] T002 Install Playwright browsers (`playwright install --with-deps`)
-- [ ] T003 Configure `.env` from `.env.example` — `BASE_URL=http://localhost:3000`, `TEST_ENV=qa`, credentials left for a purpose-created test account (never hard-coded)
-- [ ] T004 Verify `automation/tests/test_framework_wiring.py` passes (browserless self-check, no `.env`/browser needed)
-- [ ] T005 Verify the local dev server responds at `http://localhost:3000` (root URL reachable, smoke-passable) before feature work begins — spec.md §10 Entry Criteria
+- [x] T001 Install automation dependencies from `requirements.txt`
+- [x] T002 Install Playwright browsers (`playwright install --with-deps`)
+- [x] T003 Configure `.env` from `.env.example` — `BASE_URL=http://localhost:3000`, `TEST_ENV=local` (test account credentials left blank — none was provisioned; TC-009 conditional-skips per research.md R5)
+- [x] T004 Verify `automation/tests/test_framework_wiring.py` passes (browserless self-check, no `.env`/browser needed)
+- [x] T005 Verify the local dev server responds at `http://localhost:3000` (root URL reachable, smoke-passable) before feature work begins — spec.md §10 Entry Criteria
 
 ---
 
@@ -83,11 +87,11 @@ this file will use once one occurs.)*
 **Purpose**: shared building blocks every scenario depends on. **Blocking** —
 no scenario phase starts until this completes.
 
-- [ ] T006 [P] Add locators for every header/hero/capabilities/hierarchy/closing/footer element in `automation/locators/landing_locators.py`
-- [ ] T007 Add `LandingPage` page object in `automation/pages/landing_page.py`, extending `BasePage` — exposes intent only (`click_create_account(location)`, `click_sign_in(location)`, `select_hierarchy_node(label)`, `hero_statistics()`, etc.), never asserts (plan.md B4)
-- [ ] T008 [P] Add the five-record `HierarchyNode` fixture (data-model.md) to `automation/test_data/landing.json`
-- [ ] T009 [P] Register a `landing_page` fixture (constructing `LandingPage(page, settings)`) in `automation/tests/ui/conftest.py`, following the existing `example_page` pattern
-- [ ] T010 Pin an axe-core-based accessibility package in `requirements.txt` (exact version decided here, not invented earlier — plan.md B2) and verify it imports cleanly
+- [x] T006 [P] Add locators for every header/hero/capabilities/hierarchy/closing/footer element in `automation/locators/landing_locators.py`
+- [x] T007 Add `LandingPage` page object in `automation/pages/landing_page.py`, extending `BasePage` — exposes intent only (`click_create_account(location)`, `click_sign_in(location)`, `select_hierarchy_node(label)`, etc.), never asserts (plan.md B4)
+- [x] T008 [P] Add the five-record `HierarchyNode` fixture (data-model.md) to `automation/test_data/landing.json`
+- [x] T009 [P] Register a `landing_page` fixture (constructing `LandingPage(page, settings)`) in `automation/tests/ui/conftest.py`, following the existing `example_page` pattern
+- [x] T010 Pin an axe-core-based accessibility package in `requirements.txt` (`axe-playwright-python>=0.1.8`, plan.md B2) and verify it imports cleanly
 
 **Note (not a code task)**: raise the `data-testid` request for the hierarchy
 detail panel's four value fields (device count, device type, config source,
@@ -107,12 +111,12 @@ header/footer scroll-to-top elements behave correctly and independently.
 context with no session — all ten cases pass with no dependency on any
 other phase.
 
-- [ ] T011 [P] [S1] Automate unauthenticated landing-page render and all three "Create account" CTA destinations (header/hero/closing) in `automation/tests/ui/test_landing.py` (covers: TC-001, TC-002, TC-003, TC-004)
-- [ ] T012 [P] [S1] Automate the header product-mark and footer "Back to top" independent scroll-to-top behaviours in `automation/tests/ui/test_landing.py` (covers: TC-005, TC-006)
-- [ ] T013 [P] [S1] Automate the no-intercepting-modal negative check across all three "Create account" locations in `automation/tests/ui/test_landing.py` (covers: TC-007)
-- [ ] T014 [P] [S1] Automate the footer-mark non-interactivity negative check in `automation/tests/ui/test_landing.py` (covers: TC-008)
-- [ ] T047 [P] [S1] Automate the "Capabilities"/"Hierarchy" link-to-correct-section navigation check in `automation/tests/ui/test_landing.py` (covers: TC-045)
-- [ ] T049 [P] [S1] Automate the skeleton-loader-during-auth-resolution check (auth-check request intercepted and delayed) in `automation/tests/ui/test_landing.py` (covers: TC-042)
+- [x] T011 [P] [S1] Automate unauthenticated landing-page render and all three "Create account" CTA destinations (header/hero/closing) in `automation/tests/ui/test_landing.py` (covers: TC-001, TC-002, TC-003, TC-004) — all passing
+- [x] T012 [P] [S1] Automate the header product-mark and footer "Back to top" independent scroll-to-top behaviours in `automation/tests/ui/test_landing.py` (covers: TC-005, TC-006) — **both FAILING: Product Defect, each element scrolls to the top only on the first click of a page load (see Completion Report / Change Log)**
+- [x] T013 [P] [S1] Automate the no-intercepting-modal negative check across all three "Create account" locations in `automation/tests/ui/test_landing.py` (covers: TC-007) — passing
+- [x] T014 [P] [S1] Automate the footer-mark non-interactivity negative check in `automation/tests/ui/test_landing.py` (covers: TC-008) — passing
+- [x] T047 [P] [S1] Automate the "Capabilities"/"Hierarchy" link-to-correct-section navigation check in `automation/tests/ui/test_landing.py` (covers: TC-045) — **FAILING: Product Defect, links don't exist (see Completion Report)**
+- [x] T049 [P] [S1] Automate the skeleton-loader-during-auth-resolution check in `automation/tests/ui/test_landing.py` (covers: TC-042) — **FAILING: Product Defect (or test-technique limitation — see Completion Report); no interceptable auth-check request exists to delay as originally planned, checked the earliest observable frame directly instead**
 
 **Checkpoint**: Scenario 1 suite green in Chromium — a shippable smoke gate on its own (plan.md A5 Cycle 1).
 
@@ -126,8 +130,8 @@ directions.
 **Independent verification**: run this phase alone with one authenticated
 test account — all four cases pass without depending on Scenario 1's code.
 
-- [ ] T016 [P] [S2] Automate the authenticated-visitor redirect-to-home gate in `automation/tests/ui/test_landing.py` (covers: TC-009)
-- [ ] T017 [P] [S2] Automate all three "Sign in" CTA destinations (header/hero/closing) in `automation/tests/ui/test_landing.py` (covers: TC-010, TC-011, TC-012)
+- [x] T016 [P] [S2] Automate the authenticated-visitor redirect-to-home gate in `automation/tests/ui/test_landing.py` (covers: TC-009) — conditional-skip, no test account provisioned (research.md R5)
+- [x] T017 [P] [S2] Automate all three "Sign in" CTA destinations (header/hero/closing) in `automation/tests/ui/test_landing.py` (covers: TC-010, TC-011, TC-012) — all passing
 
 **Checkpoint**: Scenario 2 suite green — the redirect gate holds for both unauthenticated and authenticated visitors.
 
@@ -141,13 +145,13 @@ fully-data-driven demo.
 **Independent verification**: run this phase alone with a network listener
 attached — all eight cases pass with zero backend dependency.
 
-- [ ] T019 [P] [S3] Automate default-selection ("Floor 1" pre-selected) and node-selection detail-panel update in `automation/tests/ui/test_landing.py` (covers: TC-014, TC-015)
-- [ ] T020 [P] [S3] Automate the no-FleetIQ-API-call network assertion during hierarchy interaction in `automation/tests/ui/test_landing.py` (covers: TC-016)
-- [ ] T021 [P] [S3] Automate the `meta`-vs-`devices` field distinction for Building A/B in `automation/tests/ui/test_landing.py` (covers: TC-017)
-- [ ] T022 [P] [S3] Automate the selected-row visual-highlight assertion via `aria-pressed` in `automation/tests/ui/test_landing.py` (covers: TC-018)
-- [ ] T023 [P] [S3] Automate the zero-device node (Building B) boundary render in `automation/tests/ui/test_landing.py` (covers: TC-019)
-- [ ] T024 [P] [S3] Automate the all-five-nodes exact-`note`-text data-variation sweep in `automation/tests/ui/test_landing.py` (covers: TC-020)
-- [ ] T025 [P] [S3] Automate the largest-value node ("Unassigned", 501 devices) render at 360px in `automation/tests/ui/test_landing.py` (covers: TC-021)
+- [x] T019 [P] [S3] Automate default-selection ("Floor 1" pre-selected) and node-selection detail-panel update in `automation/tests/ui/test_landing.py` (covers: TC-014, TC-015) — **FAILING: Product Defect, no detail panel exists (see Completion Report)**
+- [x] T020 [P] [S3] Automate the no-FleetIQ-API-call network assertion during hierarchy interaction in `automation/tests/ui/test_landing.py` (covers: TC-016) — passing
+- [x] T021 [P] [S3] Automate the `meta`-vs-`devices` field distinction for Building A/B in `automation/tests/ui/test_landing.py` (covers: TC-017) — **FAILING: same detail-panel defect**
+- [x] T022 [P] [S3] Automate the selected-row visual-highlight assertion via `aria-pressed` in `automation/tests/ui/test_landing.py` (covers: TC-018) — **FAILING: same detail-panel defect (no aria-pressed at all)**
+- [x] T023 [P] [S3] Automate the zero-device node (Building B) boundary render in `automation/tests/ui/test_landing.py` (covers: TC-019) — **FAILING: same detail-panel defect**
+- [x] T024 [P] [S3] Automate the all-five-nodes exact-`note`-text data-variation sweep in `automation/tests/ui/test_landing.py` (covers: TC-020) — **FAILING: same detail-panel defect**
+- [x] T025 [P] [S3] Automate the largest-value node ("Unassigned", 501 devices) render at 360px in `automation/tests/ui/test_landing.py` (covers: TC-021) — **FAILING: same detail-panel defect**
 
 **Checkpoint**: Scenario 3 suite green — confirmed no unplanned coupling to the not-yet-agreed FLTIQ-59 API contract.
 
@@ -162,12 +166,12 @@ page, including the custom hierarchy-explorer control.
 and 200%-zoom-equivalent viewports — all seven cases pass independently of
 Scenarios 1–3.
 
-- [ ] T026 [P] [S4] Automate the 360px no-horizontal-scroll/no-truncation check in `automation/tests/ui/test_landing.py` (covers: TC-022)
-- [ ] T027 [P] [S4] Automate the full keyboard-reachability and focus-indicator sweep in `automation/tests/ui/test_landing.py` (covers: TC-023)
-- [ ] T028 [P] [S4] Automate the no-keyboard-trap forward/backward Tab sweep in `automation/tests/ui/test_landing.py` (covers: TC-024)
-- [ ] T029 [P] [S4] Integrate the axe-core contrast scan (needs T010) and assert WCAG 2.1 AA thresholds in `automation/tests/ui/test_landing.py` (covers: TC-025)
-- [ ] T030 [P] [S4] Automate the 200%-zoom-equivalent (halved-viewport) usability check, including the combined 360px+200%-zoom boundary variant, in `automation/tests/ui/test_landing.py` (covers: TC-026, TC-041)
-- [ ] T031 [P] [S4] Automate hierarchy-explorer keyboard operability (Enter/Space selection, matching focus indicator) in `automation/tests/ui/test_landing.py` (covers: TC-027)
+- [x] T026 [P] [S4] Automate the 360px no-horizontal-scroll/no-truncation check in `automation/tests/ui/test_landing.py` (covers: TC-022) — passing
+- [x] T027 [P] [S4] Automate the full keyboard-reachability and focus-indicator sweep in `automation/tests/ui/test_landing.py` (covers: TC-023) — passing (excludes the Next.js dev-tools overlay and end-of-document focus loss as non-page-content, test mechanics)
+- [x] T028 [P] [S4] Automate the no-keyboard-trap forward/backward Tab sweep in `automation/tests/ui/test_landing.py` (covers: TC-024) — passing
+- [x] T029 [P] [S4] Integrate the axe-core contrast scan (needs T010) and assert WCAG 2.1 AA thresholds in `automation/tests/ui/test_landing.py` (covers: TC-025) — **FAILING: Product Defect, 9 serious color-contrast violations (see Completion Report)**
+- [x] T030 [P] [S4] Automate the 200%-zoom-equivalent (halved-viewport) usability check, including the combined 360px+200%-zoom boundary variant, in `automation/tests/ui/test_landing.py` (covers: TC-026, TC-041) — both passing
+- [x] T031 [P] [S4] Automate hierarchy-explorer keyboard operability (Enter/Space selection, matching focus indicator) in `automation/tests/ui/test_landing.py` (covers: TC-027) — **FAILING: same hierarchy-explorer defect as TR-008 (no interactive semantics to operate via keyboard)**
 
 **Checkpoint**: Scenario 4 suite green — the epic's most-visible-page accessibility bar is met.
 
@@ -181,18 +185,18 @@ approved design exactly, and no MVP1-unsupported claim ships.
 **Independent verification**: run this phase alone as a static DOM/content
 review — all thirteen cases pass independently of any interaction flow.
 
-- [ ] T032 [P] [S5] Automate the header CTA-order assertion (Sign in before Create account) in `automation/tests/ui/test_landing.py` (covers: TC-028)
-- [ ] T033 [P] [S5] Automate the hero exact-copy and CTA-order assertions (Create account before Sign in) in `automation/tests/ui/test_landing.py` (covers: TC-029, TC-030)
-- [ ] T034 [P] [S5] Automate the capabilities section's exact heading and six-card copy assertion in `automation/tests/ui/test_landing.py` (covers: TC-031)
-- [ ] T035 [P] [S5] Automate the hierarchy section's exact heading and intro-paragraph copy assertion in `automation/tests/ui/test_landing.py` (covers: TC-032)
-- [ ] T036 [P] [S5] Automate the closing section's exact copy and CTA-order assertion in `automation/tests/ui/test_landing.py` (covers: TC-033)
-- [ ] T037 [P] [S5] Automate the footer presence assertion (mark, copyright, Back to top) in `automation/tests/ui/test_landing.py` (covers: TC-034)
-- [ ] T038 [P] [S5] Automate the partial design-system token/component usage audit for TR-015 in `automation/tests/ui/test_landing.py` (covers: TC-035 — automated half only; the manual visual-regression half stays in plan.md A3)
-- [ ] T039 [P] [S5] Automate the MVP1-capability-claim checklist comparison in `automation/tests/ui/test_landing.py` (covers: TC-036)
-- [ ] T040 [P] [S5] Automate the no-analytics/no-tracking network assertion in `automation/tests/ui/test_landing.py` (covers: TC-037)
-- [ ] T041 [P] [S5] Automate the excluded-content-category absence assertion (pricing/docs/blog/contact/demo, explicitly excluding TR-018's line) in `automation/tests/ui/test_landing.py` (covers: TC-038)
-- [ ] T046 [P] [S5] Automate the "Capabilities"/"Hierarchy" section-anchor link presence assertion in `automation/tests/ui/test_landing.py` (covers: TC-044)
-- [ ] T048 [P] [S5] Automate the hero "Free while you set up your first fleet. No card required." presence assertion in `automation/tests/ui/test_landing.py` (covers: TC-039)
+- [x] T032 [P] [S5] Automate the header CTA-order assertion (Sign in before Create account) in `automation/tests/ui/test_landing.py` (covers: TC-028) — passing
+- [x] T033 [P] [S5] Automate the hero exact-copy and CTA-order assertions (Create account before Sign in) in `automation/tests/ui/test_landing.py` (covers: TC-029, TC-030) — TC-030 passing; **TC-029 FAILING: Product Defect, subhead/stats copy diverges from spec (see Completion Report)**
+- [x] T034 [P] [S5] Automate the capabilities section's exact heading and six-card copy assertion in `automation/tests/ui/test_landing.py` (covers: TC-031) — **FAILING: Product Defect, cards 02/03/06 use contractions not in spec**
+- [x] T035 [P] [S5] Automate the hierarchy section's exact heading and intro-paragraph copy assertion in `automation/tests/ui/test_landing.py` (covers: TC-032) — passing
+- [x] T036 [P] [S5] Automate the closing section's exact copy and CTA-order assertion in `automation/tests/ui/test_landing.py` (covers: TC-033) — **FAILING: Product Defect, body uses "You'll" not spec's "You will"**
+- [x] T037 [P] [S5] Automate the footer presence assertion (mark, copyright, Back to top) in `automation/tests/ui/test_landing.py` (covers: TC-034) — **FAILING: Product Defect, no "©ACL Digital" text anywhere in the footer**
+- [ ] T038 [P] [S5] Automate the partial design-system token/component usage audit for TR-015 (covers: TC-035) — **not implemented.** `test-cases.json` (authoritative, per CLAUDE.md) records TC-035 as `automatable: false` / `automation_status: "Manual"`, which this task's own premise ("automated half only") contradicts. Writing a partial automated audit without first correcting that record would silently override the case's own classification, so no test was added — see the Completion Report.
+- [x] T039 [P] [S5] Automate the MVP1-capability-claim checklist comparison in `automation/tests/ui/test_landing.py` (covers: TC-036) — passing
+- [x] T040 [P] [S5] Automate the no-analytics/no-tracking network assertion in `automation/tests/ui/test_landing.py` (covers: TC-037) — passing
+- [x] T041 [P] [S5] Automate the excluded-content-category absence assertion (pricing/docs/blog/contact/demo, explicitly excluding TR-018's line) in `automation/tests/ui/test_landing.py` (covers: TC-038) — passing
+- [x] T046 [P] [S5] Automate the "Capabilities"/"Hierarchy" section-anchor link presence assertion in `automation/tests/ui/test_landing.py` (covers: TC-044) — **FAILING: Product Defect, links don't exist (see Completion Report)**
+- [x] T048 [P] [S5] Automate the hero "Free while you set up your first fleet. No card required." presence assertion in `automation/tests/ui/test_landing.py` (covers: TC-039) — passing
 
 **Checkpoint**: Scenario 5 suite green — content/structure matches scope, including TR-018 (resolved 2026-09-21, no longer excluded).
 
@@ -200,10 +204,10 @@ review — all thirteen cases pass independently of any interaction flow.
 
 ## Phase 8: Cross-Cutting & Polish
 
-- [ ] T042 [P] Add Allure metadata (epic/feature/story/severity, `@allure.testcase("TC-xxx")`) to every test added in Phases 3–7, in `automation/tests/ui/test_landing.py`
-- [ ] T043 [P] Add `@pytest.mark.p1/p2/p3`, `a11y`, `boundary`, `negative` markers per each case's actual priority/type from `test-cases.json`, in `automation/tests/ui/test_landing.py`
-- [ ] T044 Verify the full landing-page suite passes in parallel (`-n auto`) across the Chromium/Firefox/WebKit triad with no order dependence
-- [ ] T045 Confirm every automated test's `@allure.testcase` id matches its `TC-xxx`, then update `spec.md` §14's Automation column and `test-cases.json`'s `test_file`/`automation_status` fields (this is `/speckit-implement`'s own Step 7 — tracked here so it isn't forgotten)
+- [x] T042 [P] Add Allure metadata (epic/feature/story/severity, `@allure.testcase("TC-xxx")`) to every test added in Phases 3–7, in `automation/tests/ui/test_landing.py`
+- [x] T043 [P] Add `@pytest.mark.p1/p2/p3`, `a11y`, `boundary`, `negative` markers per each case's actual priority/type from `test-cases.json`, in `automation/tests/ui/test_landing.py`
+- [x] T044 Verify the full landing-page suite passes in parallel (`-n auto`) across the Chromium/Firefox/WebKit triad with no order dependence — **verified with a caveat.** Chromium `-n auto`: 24 passed / 16 failed / 1 skipped, identical to serial — no order dependence. WebKit serial: the same 24/16/1 split exactly. Firefox: identical 16 genuine failures at `-n 4`, but the full-suite `-n auto` default (12 workers on this machine) saturated the single dev server and produced 3 additional transient timeouts (TC-007/010/012) that passed cleanly in isolation and at `-n 4` — an environment/CI-capacity limit (too many concurrent browsers against one dev-mode Next.js server), not a test-order or product defect. Recorded here rather than silently rerun until green. **Amendment, 2026-09-21**: these counts predate the TC-005/TC-006 repeat-click extension; the split is now 22 passed / 18 failed / 1 skipped. The parallel and cross-browser conclusions are unchanged — both newly-failing cases were re-verified as deterministic under `-n 2` and on Firefox, failing identically (`scrollY=850`, `url=…/#top`).
+- [x] T045 Confirm every automated test's `@allure.testcase` id matches its `TC-xxx`, then update `spec.md` §14's Automation column and `test-cases.json`'s `test_file`/`automation_status` fields — done
 
 ---
 

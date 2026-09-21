@@ -10,3 +10,4 @@ pytest-rerunfailures>=14.0  # flake triage only — never a permanent fix
 pytest-timeout>=2.3         # owns the `timeout` ini key; kills hung browser tests
 python-dotenv>=1.0          # env-based config; secrets never live in the repo
 openpyxl>=3.1               # test-cases.xlsx export (.specify/scripts/python/export_testcases.py)
+axe-playwright-python>=0.1.8  # automated WCAG contrast/violation scanning (research.md R3)
