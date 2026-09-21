@@ -84,9 +84,10 @@ installed (`pip install -r requirements.txt`), browsers missing
 .specify/scripts/bash/run-tests.sh [-m MARKER] [-k PATH] [-b BROWSER] [-n auto] --json
 ```
 
-The script writes Allure results to `reports/allure-results`, generates HTML
-into `reports/allure-report` when the `allure` CLI is available, and returns a
-JSON summary line with `PYTEST_EXIT`, `VERDICT` and `REPORT_STATUS`.
+The script writes Allure results to `automation/reports/allure-results`,
+generates HTML into `automation/reports/allure-report` when the `allure` CLI is
+available, and returns a JSON summary line with `PYTEST_EXIT`, `VERDICT` and
+`REPORT_STATUS`.
 
 - `REPORT_STATUS: allure-cli-missing` means results were captured but no HTML
   was built. Tell the user how to install the CLI
@@ -96,7 +97,7 @@ JSON summary line with `PYTEST_EXIT`, `VERDICT` and `REPORT_STATUS`.
 
 ### Step 4: Read the results
 
-Parse the pytest output and `reports/allure-results/*-result.json` for:
+Parse the pytest output and `automation/reports/allure-results/*-result.json` for:
 
 - Totals: passed, failed, skipped, errors, duration
 - Per-test status, with each failure's actual error message
@@ -210,7 +211,7 @@ Report:
 
 ## Done When
 
-- [ ] Suite executed and results captured in `reports/allure-results`
+- [ ] Suite executed and results captured in `automation/reports/allure-results`
 - [ ] Allure HTML generated, or its absence explained with the fix
 - [ ] Every failure triaged into product / test / environment / flaky / orphan-unsupported
 - [ ] Requirement coverage excludes any orphan/unsupported test result

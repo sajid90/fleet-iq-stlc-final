@@ -17,12 +17,28 @@ from dotenv import load_dotenv
 AUTOMATION_ROOT = Path(__file__).resolve().parents[1]  # .../automation
 PROJECT_ROOT = AUTOMATION_ROOT.parent  # repo root
 DATA_DIR = AUTOMATION_ROOT / "test_data"
+REPORTS_DIR = AUTOMATION_ROOT / "reports"  # generated output — gitignored
 
 
 def _bool(name: str, default: bool) -> bool:
     raw = os.getenv(name)
     if raw is None or raw == "":
         return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _optional_bool(name: str) -> bool | None:
+    """Read a boolean that has no in-code default — `None` when unset.
+
+    Nothing is substituted here, so `.env` stays the single source of truth,
+    but the value is also not *demanded* at import time. The caller decides
+    whether it is actually needed: see `_maximize_enabled` in
+    `automation/conftest.py`, which requires MAXIMIZE only for a headed run,
+    since a headless run never maximizes and the value is moot.
+    """
+    raw = os.getenv(name)
+    if raw is None or raw.strip() == "":
+        return None
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
@@ -48,6 +64,7 @@ class Settings:
     default_timeout: int
     viewport_width: int
     viewport_height: int
+    maximize: bool | None  # None when MAXIMIZE is unset; only needed if headed
     username: str | None
     password: str | None
 
@@ -74,9 +91,10 @@ def get_settings() -> Settings:
         browser=os.getenv("BROWSER", "chromium"),
         headless=_bool("HEADLESS", True),
         slow_mo=_int("SLOW_MO", 0),
-        default_timeout=_int("DEFAULT_TIMEOUT", 30_000),
+        default_timeout=_int("DEFAULT_TIMEOUT", 10_000),
         viewport_width=_int("VIEWPORT_WIDTH", 1920),
         viewport_height=_int("VIEWPORT_HEIGHT", 1080),
+        maximize=_optional_bool("MAXIMIZE"),
         username=os.getenv("TEST_USERNAME") or None,
         password=os.getenv("TEST_PASSWORD") or None,
     )

@@ -18,8 +18,8 @@
 | Pass rate | [N%] |
 | Duration | [Xm Ys] |
 
-**Allure report**: `reports/allure-report/index.html`
-**Raw results**: `reports/allure-results/`
+**Allure report**: `automation/reports/allure-report/index.html`
+**Raw results**: `automation/reports/allure-results/`
 
 ## 2. Results by Priority
 

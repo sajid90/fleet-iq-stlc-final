@@ -181,7 +181,7 @@ first.]
 ## B6. Reporting & CI
 
 - **Local run**: `.specify/scripts/bash/run-tests.sh`
-- **Results**: `reports/allure-results` → HTML in `reports/allure-report`
+- **Results**: `automation/reports/allure-results` → HTML in `automation/reports/allure-report`
 - **Attachments on failure**: screenshot, page HTML, Playwright trace, video
 - **CI trigger**: [PR / nightly / on-demand]
 - **Quality gate**: [e.g. P1 suite must be 100% green to merge]
