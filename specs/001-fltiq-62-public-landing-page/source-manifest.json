@@ -128,6 +128,15 @@
       "authority": "presentation-and-interaction",
       "retrieved_at": "2026-09-18T00:00:00Z",
       "fields_used": ["Full file content read via the Claude Design MCP (DesignSync: get_project + list_files + get_file), per the dependency resolution gate (1F.2) added to this skill after an earlier session's connection outage. Confirmed verbatim: hero headline/subhead/badge, three hero statistics, six capability card titles+bodies, the capabilities section heading ('Built for fleets that outgrew the spreadsheet.'), the hierarchy section heading+intro ('Group once. Configure the group.' -- found on a requester-supplied screenshot cross-check, not on the first HTML pass), CTA button order per section (Sign in before Create account in the header; the reverse in the hero and closing section), the header product mark's click-to-#top link (absent from the footer's plain-text mark), the hierarchy explorer's full static node fixture including the exact `note` text for all five nodes and the distinct `meta` (tree-row) vs `devices` (detail-panel) fields -- both found only by cross-checking the raw source against requester-supplied screenshots, not on the first pass -- the two 'Create account'/'Sign in' intercept-modal bodies (matching FLTIQ-62's own 'Note on the design prototype'), and one line -- 'Free while you set up your first fleet. No card required.' -- with no counterpart in any Jira/PRD source and in tension with the story's own 'Out of scope: Pricing ... none is in MVP1' (see conflicts[] CF-002).", "2026-09-19 retrofit (per the updated 1F.3 six-pass UI Element Enumeration procedure, spec.md section 15a): re-ran list_files against the design project -- 12 screen files confirmed, 11 excluded by name as belonging to other tickets (FLTIQ-33 sign-up flow, FLTIQ-35 sign-in variant, home/account/org-settings/member-management screens); re-fetched and structurally enumerated FleetIQ Landing.dc.html (text, interactive elements, repeated labels, data fixtures, conditionals, semantic attributes). Reconciled cleanly against every existing TR with exactly one new finding: the hierarchy tree row's own selected-state highlight (`rowStyle`, driven by `node.isSelected`) was never asserted -- added to TR-008 and Scenario 3."]
+    },
+    {
+      "type": "decision",
+      "id": "Requester decision resolving spec.md §13b Q2",
+      "found_on": "FLTIQ-62 (relayed via /speckit-clarify, 2026-09-21)",
+      "relationship": "primary",
+      "authority": "decision",
+      "retrieved_at": "2026-09-21T00:00:00Z",
+      "fields_used": ["\"skeleton loader\" -- the requester's answer to \"What should the page show, if anything, while the visitor's authentication state is still resolving at first paint?\". This is TR-020's sole source: no Jira field, PRD, decision log, or design artifact spoke to this behaviour at all before this decision -- unlike TR-018/CF-002, which adjudicated between two existing sources, this creates a requirement with no prior source to reconcile."]
     }
   ],
   "acceptance_criteria": [
@@ -149,7 +158,8 @@
     {"ref": "FLTIQ-35", "kind": "jira-issue", "discovered_in": "FLTIQ-62 description (prose)", "status": "resolved", "note": "Sign-in screen. Same caveat as FLTIQ-33, applies to TR-005."},
     {"ref": "FLTIQ-45", "kind": "jira-issue", "discovered_in": "FLTIQ-60 description (prose: 'Blocks: FLTIQ-45')", "status": "resolved", "note": "Navigation shell (post-auth). Informational only -- the public landing page does not use the navigation shell; not applicable to this story's test basis."},
     {"ref": "FLTIQ-15", "kind": "jira-issue", "discovered_in": "FLTIQ-29 (Epic) description (prose)", "status": "resolved", "note": "PostgreSQL tenant isolation. Epic-wide infra dependency; not applicable -- the landing page makes no API/data calls."},
-    {"ref": "FLTIQ-19", "kind": "jira-issue", "discovered_in": "FLTIQ-29 (Epic) description (prose)", "status": "resolved", "note": "Outbound email path. Epic-wide infra dependency; not applicable to this story."}
+    {"ref": "FLTIQ-19", "kind": "jira-issue", "discovered_in": "FLTIQ-29 (Epic) description (prose)", "status": "resolved", "note": "Outbound email path. Epic-wide infra dependency; not applicable to this story."},
+    {"ref": "FLTIQ-31", "kind": "jira-issue", "discovered_in": "spec.md Scenario 2's own negative flow (backlog-ref citation 'S-02'), NOT discovered during the original 1E/1G resolution pass -- FLTIQ-62's own description and AC field never mention it. Belatedly resolved 2026-09-21 after a user question about TC-013's provenance prompted a fresh Jira lookup.", "status": "resolved -- not applicable to this story's own test basis", "note": "'Set up identity pools and session lifecycle' (S-02), sibling story under the shared FLTIQ-29 epic. Its own AC field states [TIA-AC-29]: 'Given a session idle for 8 hours, when the next request is made, then it is rejected and sign-in is required.' Confirmed real, but the Scenario 2 negative-flow item that cited it was itself out of this page's scope and inconsistent with TR-001/TR-002 -- removed rather than re-cited (see spec.md Change Log and Testability Review, 2026-09-21). Kept here only for the audit trail of what was investigated."}
   ],
   "conflicts": [
     {
@@ -165,8 +175,9 @@
       "source_a": {"statement": "\"Out of scope: Pricing, documentation, blog, contact form, demo request, and analytics — none is in MVP1\"", "authority": "scope-and-story-acceptance", "ref": "FLTIQ-62 description, Scope section"},
       "source_b": {"statement": "The hero section's design includes the line \"Free while you set up your first fleet. No card required.\" directly beneath the calls to action", "authority": "presentation-and-interaction", "ref": "FleetIQ Landing.dc.html (Claude Design source)"},
       "domain": "scope (whether pricing/commercial-terms content ships on this page)",
-      "outcome": "Unresolved. The story's own scope statement explicitly excludes pricing content from MVP1, and per the constitution's domain-based precedence policy, scope-and-story-acceptance -- not presentation-and-interaction -- governs 'scope of this cycle'; presentation-and-interaction governs only 'layout, labels, interaction detail'. Whether 'Free ... No card required' counts as excluded pricing content, or is incidental microcopy the scope exclusion did not intend to reach, is a business-intent question neither source settles. Not resolved in source; not silently decided.",
-      "status": "unresolved"
+      "outcome": "Resolved by requester decision, 2026-09-21 (spec.md Clarifications, Session 2026-09-21). The requester authorized the design's line to ship as designed, explicitly on record as interim/placeholder copy created without marketing input and subject to future revision -- not the committed commercial policy the story's pricing exclusion was written to prevent. This is the adjudication constitution I's precedence policy anticipates: a business-intent question neither source alone settles, now settled in writing by the party with authority to settle it.",
+      "status": "resolved-by-decision",
+      "resolution_source": {"statement": "\"We can treat this landing page as a placeholder for now, as it was designed without input from the marketing team. It will be updated in the future, depending on how we decide to showcase the product once it is built.\"", "authority": "decision", "ref": "Requester response to spec.md §13a Q1, relayed 2026-09-21"}
     }
   ],
   "missing_sources": [

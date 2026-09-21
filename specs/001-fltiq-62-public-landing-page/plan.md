@@ -2,7 +2,7 @@
 
 **Feature Dir**: `specs/001-fltiq-62-public-landing-page` | **Date**: 2026-09-18 | **Test Basis**: [spec.md](./spec.md)
 **Plan ID**: TP-FLTIQ-62 | **Owner**: Sajid Mohammad | **Status**: Approved
-**Approved by**: Sajid Mohammad | **Approved on**: 2026-09-19
+**Approved by**: Sajid Mohammad | **Approved on**: 2026-09-21 *(re-approval covering the 2026-09-21 New requirement Change Log entries: `spec.md`'s TR-018 resolution and TR-020 addition, both reflected in this plan's A0/B1 tables)*
 
 > STLC Phase 2 — Test Planning. Produced by `/speckit-plan`.
 > Part A is the **manual test strategy**. Part B is the **technical design for
@@ -16,25 +16,30 @@ Control. Empty for now: no edit has been made to this plan since approval.)*
 
 | Date | Classification | What changed | Blast radius | Status impact |
 |------|-----------------|--------------|---------------|----------------|
-| — | — | No post-approval edits yet | — | — |
+| 2026-09-19 | Correction | A6 Test Environment and A7 Schedule updated: `BASE_URL` targets a local dev server (`http://localhost:3000`), not a shared QA/Staging deployment as originally written. Same environment fact as `spec.md`'s matching entry. | No B1-B7 design decision, coverage target, or framework choice depends on which environment class is named — only A6/A7's own wording. | Stayed Approved |
+| 2026-09-21 | New requirement | `spec.md`'s TR-018 resolved from UNDEFINED to DEFINED (CF-002 answered by requester decision). A0's TR-018 row updated from excluded to DEFINED; the Blocked requirements register emptied; B1's P2 band grows from 8 to 9 requirements (~90% → ~89%, TR-018 joins as a deterministic literal-copy check); B7's "TR-018 is blocked/UNDEFINED" risk row removed as moot; Constitution Check rows I/II updated; Summary rewritten. | `test-cases.json` (TC-039 converted from Blocked) and `tasks.md` (T048 added) already reflect this — see their own Change Logs, same date. No B2-B6 framework/stack/data-strategy decision changes; only coverage bookkeeping. | **Reverted to In Review** — a human must set a fresh `Approved by`/`Approved on`; this plan's own target-coverage figures changed, not just a citation |
+| 2026-09-21 | New requirement | `spec.md` created TR-020 (§13b Q2 answered — "skeleton loader"), wholly new, not an existing excluded item like TR-018 was. A0 gained a new row; B1's P3 band grows from 2 to 3 requirements (TR-010, 016, 020, all 100%); Summary rewritten (19→20 total requirements, 10/11→11/12 P2/P3 automated). Also fixed while cross-checking: A3's "One-off verification of CF-002" manual row removed (TC-039 asserts it directly now, no longer needed) and the marketing-copy-accuracy row's blocking language updated to match §13b Q1's actual (non-literal) answer — both were already stale before this entry, caught only now. | `test-cases.json` (TC-042 converted from Blocked) and `tasks.md` (T049 added, EC-001 traceability row fixed) already reflect this — see their own Change Logs, same date. | Stays In Review — already reverted by the TR-018 entry above; adds to the same pending batch |
 
 ## Summary
 
 FLTIQ-62 adds FleetIQ's public, unauthenticated landing page — the entry
-point ahead of sign-up/sign-in. 18 of `spec.md`'s 19 testable requirements
-are DEFINED and ready to plan against; TR-018 (the contested "Free while you
-set up your first fleet. No card required." line) is UNDEFINED, blocked on an
-open source conflict (CF-002 / §13a Q1), and gets no test strategy here. Of
-the remaining 18: **8 P1 requirements automate at 100%** (the auth-redirect
+point ahead of sign-up/sign-in. All 20 of `spec.md`'s testable requirements
+are now DEFINED and planned against. Two were resolved by requester decision
+on 2026-09-21: TR-018 (the "Free while you set up your first fleet. No card
+required." line) was UNDEFINED pending CF-002 — it ships as designed, on
+record as interim/placeholder copy; TR-020 (skeleton loader during
+auth-state resolution) is wholly new, created from that same clarification
+round. Of the 20: **8 P1 requirements automate at 100%** (the auth-redirect
 gate, both primary CTAs, the hierarchy explorer's core interaction, and the
-full WCAG/responsive baseline); **9 of 10 P2/P3 requirements automate** as
-deterministic content/structure checks; one (TR-015, design-system-token
-compliance) is only partially automatable and is backed by a manual
-visual-regression review. Five things stay manual: visual/brand fidelity
-against the Keel design, marketing-copy business-accuracy sign-off, one-off
-verification of however CF-002 resolves, a screen-reader exploratory pass
-(axe-core catches roughly a third to half of real WCAG issues), and a
-real-device sanity check beyond the emulated 360px viewport.
+full WCAG/responsive baseline); **11 of 12 P2/P3 requirements automate** as
+deterministic content/structure checks (TR-018 and TR-020 both included, now
+straightforward literal-copy/presence assertions); one (TR-015,
+design-system-token compliance) is only partially automatable and is backed
+by a manual visual-regression review. Four things stay manual:
+visual/brand fidelity against the Keel design, marketing-copy
+business-accuracy sign-off, a screen-reader exploratory pass (axe-core
+catches roughly a third to half of real WCAG issues), and a real-device
+sanity check beyond the emulated 360px viewport.
 
 ---
 
@@ -85,9 +90,8 @@ for a page with no auth boundary of its own and no data input.)*
 | Area | Why manual | Effort |
 |------|------------|--------|
 | Visual/brand fidelity against the Keel design (spacing, exact colours, typography rendering) | Subjective visual judgement — pixel-level fidelity to a design isn't a boolean automation can assert cleanly, and TR-015's "every token from the design system" claim is better served by a human comparing rendered output to the design plus a visual-regression baseline than a single Playwright assertion (already flagged in `spec.md` §11) | 2h |
-| Marketing-copy business-accuracy sign-off | TR-016 asserts the *literal* copy makes no unsupported claim per the story's own checklist; whether "500+ devices onboarded in a single import" (§13b Q1) is actually true is a business fact only the Device Registrar epic owner can confirm, not something a test can derive | 1h, blocked on §13b Q1 response |
-| One-off verification of CF-002's resolution | Whatever the team decides for the "Free... No card required." line (ship/cut/revise, §13a Q1), a single manual check confirms it shipped as decided before the automated suite is updated to assert it going forward | 0.5h, blocked on §13a Q1 response |
-| Screen-reader exploratory pass (NVDA / VoiceOver) | Automated axe-core scanning (research.md R3) catches roughly a third to half of real-world WCAG issues; the hierarchy explorer's custom tree control in particular needs a human listening to what actually gets announced, not just that ARIA attributes are present | 2h |
+| Marketing-copy business-accuracy sign-off | TR-016 asserts the *literal* copy makes no unsupported claim per the story's own checklist; whether "500+ devices onboarded in a single import" is actually true is a business fact only the Device Registrar epic owner can confirm, not something a test can derive. §13b Q1's 2026-09-21 response didn't literally confirm this (see `spec.md` Testability Review) — still open if it matters before launch. | 1h, follow up with Device Registrar owner directly |
+| Screen-reader exploratory pass (NVDA / VoiceOver) | Automated axe-core scanning (research.md R3) catches roughly a third to half of real-world WCAG issues; the hierarchy explorer's custom tree control in particular needs a human listening to what actually gets announced, not just that ARIA attributes are present. Also now covers the script-failure charter (CH-002, §13b Q3's partial answer). | 2h |
 | Real-device sanity check beyond the emulated 360px viewport | Playwright's viewport emulation is not identical to a real phone's touch behaviour and rendering; a quick manual pass on at least one real Android/iOS device catches what emulation can't | 1h |
 
 ## A4. Exploratory Test Charters
@@ -117,7 +121,7 @@ for a page with no auth boundary of its own and no data input.)*
 
 | Item | Value |
 |------|-------|
-| Environments | QA / Staging, per `BASE_URL` in `.env` |
+| Environments | Local dev server, `http://localhost:3000`, per `BASE_URL` in `.env` — not a shared QA/Staging deployment |
 | Test accounts | One purpose-created, least-privileged account with an existing tenant, for Scenario 2's authenticated-redirect check — credentials sourced from `.env` (`TEST_USERNAME`/`TEST_PASSWORD`), never written into any test file |
 | Data seeding | None — the hierarchy explorer's data is a static fixture bundled with the build (`spec.md` §6); no product data exists for this page to seed |
 | Integrations | None live — this page explicitly makes no API call (TR-008/NFR-002). FLTIQ-33 (sign-up) and FLTIQ-35 (sign-in) are external dependencies for full-journey verification; `spec.md` §10 already documents the fallback (route-level verification only) if they're not yet deployed |
@@ -131,7 +135,7 @@ gave a schedule for this ticket, and none is invented here.)*
 |----------|-------|----------|------------|
 | Test case development (`/speckit-tasks`) | QA | 0.5d | This plan approved |
 | Automation implementation (`/speckit-implement`) | QA/SDET | 2d | Framework files listed in B3 |
-| Manual/exploratory execution (A3, A4) | QA | 1d (6.5h across A3 + CH-001..003) | Build deployed to QA/Staging |
+| Manual/exploratory execution (A3, A4) | QA | 1d (6.5h across A3 + CH-001..003) | Build running at the local dev server |
 | Execution cycle 1 (smoke) | QA | 0.5d | Build deployed, smoke-passable |
 
 ## A8. Test Deliverables
@@ -168,13 +172,15 @@ gave a schedule for this ticket, and none is invented here.)*
 | TR-015 | DEFINED | scope-and-story-acceptance + presentation-and-interaction | unbracketed-6, [FLTIQ-60] |
 | TR-016 | DEFINED | scope-and-story-acceptance | unbracketed-7 |
 | TR-017 | DEFINED | scope-and-story-acceptance | Story §Scope, Out of scope |
+| TR-018 | DEFINED | presentation-and-interaction + decision | Claude Design source; CF-002 resolved by requester decision, 2026-09-21 |
 | TR-019 | DEFINED | scope-and-story-acceptance + presentation-and-interaction | Story §Scope bullet 5 + design source |
+| TR-020 | DEFINED | decision | Requester decision, 2026-09-21, resolving §13b Q2 (EC-001) -- no other source spoke to this requirement at all |
 
 ### Blocked requirements register
 
-| TR-xxx | Blocked on | Reason |
-|--------|-----------|--------|
-| TR-018 | `spec.md` §13a Q1 (CF-002) | Existence disputed — the story's own pricing exclusion vs. the approved design both speak to this line without either settling whether it ships. **No test approach is designed for it.** Excluded from the §B1 coverage denominator. Revisit once §13a Q1 is answered; at that point this is a `spec.md` update (TR-018's Class changes to DEFINED or the row is removed), not a `plan.md` patch. |
+*(Empty as of 2026-09-21. TR-018 was the sole entry — `spec.md` §13a Q1
+(CF-002) resolved by requester decision; it now carries a normal test
+approach in §B1 like every other requirement, not a `plan.md` patch.)*
 
 ## B1. Automation Candidacy
 
@@ -189,15 +195,17 @@ gave a schedule for this ticket, and none is invented here.)*
 **Target automation coverage**:
 - **P1 (8 requirements: TR-001, 002, 004, 005, 008, 011, 012, 013): 100%.**
   Every P1 requirement is DEFINED with no blocking gap.
-- **P2 (8 requirements: TR-003, 006, 007, 009, 014, 015, 017, 019): ~90%.**
+- **P2 (9 requirements: TR-003, 006, 007, 009, 014, 015, 017, 018, 019): ~89%.**
   All automate except TR-015, which gets a supplementary manual
   visual-regression review (A3) alongside a partial automated check (a
   component-usage/token audit, not a single Playwright assertion — per
-  `spec.md` §11's own proposed resolution).
-- **P3 (2 requirements: TR-010, 016): 100%.** Both are deterministic
+  `spec.md` §11's own proposed resolution). TR-018 (resolved 2026-09-21, see
+  A0) joins this band as a deterministic literal-copy check — TC-039.
+- **P3 (3 requirements: TR-010, 016, 020): 100%.** All three are deterministic
   structural/content checks (footer presence; literal-copy-against-checklist
-  comparison) with no subjective element.
-- **TR-018: excluded** (blocked requirements register above).
+  comparison; skeleton-loader presence during auth resolution — TR-020,
+  resolved 2026-09-21, TC-042) with no subjective element.
+*(TR-018 is no longer excluded — see the P2 band above.)*
 
 ## B2. Technology Stack
 
@@ -327,7 +335,6 @@ authenticated session ends automatically with the test's browser context
 | FLTIQ-33 (sign-up) / FLTIQ-35 (sign-in) may not be deployed when this suite first runs | Conditional skip with an explicit, visible reason (research.md R5); re-enable once those land — never a silent pass |
 | No `API_BASE_URL` is configured, so "no API call" can only be asserted broadly (no XHR/fetch at all), not filtered to a specific host | Accepted as the stronger, not weaker, check (research.md R4); revisit if this page ever gains real network activity |
 | axe-core-class tooling only catches roughly a third to half of real WCAG issues | Covered by exploratory charter CH-001 (screen-reader pass) in Part A — never claimed as fully automated |
-| TR-018 is blocked/UNDEFINED | Excluded from automation entirely (A0); do not write a test asserting any outcome for it until `spec.md` is updated |
 | The hierarchy tree row's `meta` text (e.g. Building A's "2 subgroups") is easy to conflate with the detail panel's `devices` count (Building A shows 79 there) — they read alike for three of the five nodes but diverge for the two "Building" nodes | Assert `meta` and `devices` as two distinct fixture fields from `data-model.md`, never derive one from the other in a test; the two Building nodes are the specific regression case to keep in the suite |
 | The design source defines a third, unused modal variant (`flow`/`openFlow`) and two page-level props (`theme`, `showStats`) that are Claude Design/Keel authoring scaffolding, not real page behaviour (confirmed in `spec.md` §11) | Do not write a test for any of the three — there is nothing they gate in the real page. Flagged here so a future implementer skimming the source doesn't assume `openFlow` is a missed interaction to automate. |
 
@@ -339,8 +346,8 @@ authenticated session ends automatically with the test's browser context
 
 | Principle | Compliance |
 |---|---|
-| I. Source Authority & Traceability | Pass — every TR carried forward from `spec.md` with its Class and Authority (A0); TR-018 correctly excluded rather than silently tested |
-| II. Requirement Testability & Evidence Classification | Pass — no test approach designed for the one UNDEFINED requirement (TR-018); every INFERRED decision in `research.md` is explicitly test-mechanics only, never a restated product expectation |
+| I. Source Authority & Traceability | Pass — every TR carried forward from `spec.md` with its Class and Authority (A0), including TR-018 (resolved 2026-09-21, no longer excluded) |
+| II. Requirement Testability & Evidence Classification | Pass — no requirement remains UNDEFINED (TR-018 resolved); every INFERRED decision in `research.md` is explicitly test-mechanics only, never a restated product expectation |
 | III. Context Flows Forward | Pass — `spec.md`'s Class/Authority reproduced verbatim in A0; nothing here introduces a source `spec.md` didn't already resolve |
 | IV. Risk Drives Test Depth | Pass — P1 gets 100% automated coverage and runs first (B1); P3 still gets full automated coverage here since both P3 items are cheap, deterministic checks, not because risk was ignored |
 | V. Negative, Boundary & Security Testing | Pass — boundary values identified (zero-device and max-count nodes, data-model.md); negative flows present in every `spec.md` scenario; the one privacy-adjacent concern (no analytics/tracking, TR-017) is covered |

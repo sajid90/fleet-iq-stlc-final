@@ -1,0 +1,847 @@
+{
+  "ticket": "FLTIQ-62",
+  "feature": "Build the public landing page",
+  "generated": "2026-09-21T16:30:00",
+  "test_cases": [
+    {
+      "id": "TC-001",
+      "title": "Unauthenticated visitor sees the landing page with no sign-in prompt",
+      "scenario": "S1",
+      "requirements": ["TR-001"],
+      "acceptance_criteria": ["unbracketed-1"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No session cookie/token present (fresh browser context)"],
+      "steps": [
+        {"action": "Navigate to the root URL (`BASE_URL`)", "expected": "The public landing page renders"},
+        {"action": "Inspect the page for any sign-in prompt, redirect, or auth wall", "expected": "No sign-in prompt or redirect occurs"}
+      ],
+      "expected_result": "The landing page renders fully with no sign-in requirement of any kind",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-002",
+      "title": "Header \"Create account\" navigates to the sign-up screen",
+      "scenario": "S1",
+      "requirements": ["TR-004"],
+      "acceptance_criteria": ["unbracketed-2"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No active session", "Landing page loaded"],
+      "steps": [
+        {"action": "Click \"Create account\" in the header", "expected": "The browser navigates to the sign-up screen (FLTIQ-33)"}
+      ],
+      "expected_result": "The visitor lands on the real sign-up screen; no intercepting modal appears",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "If FLTIQ-33 is not yet deployed to the target environment, verify at the routing/target-URL level only (spec.md §10) and skip the destination-page assertion with an explicit reason"
+    },
+    {
+      "id": "TC-003",
+      "title": "Hero \"Create account\" navigates to the sign-up screen",
+      "scenario": "S1",
+      "requirements": ["TR-004"],
+      "acceptance_criteria": ["unbracketed-2"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No active session", "Landing page loaded"],
+      "steps": [
+        {"action": "Click \"Create account\" in the hero section", "expected": "The browser navigates to the sign-up screen (FLTIQ-33)"}
+      ],
+      "expected_result": "The visitor lands on the real sign-up screen; no intercepting modal appears",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Same routing caveat as TC-002. Verified independently of the header instance per TR-004."
+    },
+    {
+      "id": "TC-004",
+      "title": "Closing-section \"Create account\" navigates to the sign-up screen",
+      "scenario": "S1",
+      "requirements": ["TR-004"],
+      "acceptance_criteria": ["unbracketed-2"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No active session", "Landing page loaded, scrolled to the closing section"],
+      "steps": [
+        {"action": "Click \"Create account\" in the closing section", "expected": "The browser navigates to the sign-up screen (FLTIQ-33)"}
+      ],
+      "expected_result": "The visitor lands on the real sign-up screen; no intercepting modal appears",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Same routing caveat as TC-002. Verified independently of the header/hero instances per TR-004."
+    },
+    {
+      "id": "TC-005",
+      "title": "Header product mark scrolls the page back to the top when clicked",
+      "scenario": "S1",
+      "requirements": ["TR-003"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded", "Visitor has scrolled down (e.g. to the Hierarchy section)"],
+      "steps": [
+        {"action": "Click the \"FleetIQ\" product mark (icon + wordmark) in the header", "expected": "The page scrolls back to the top (`#top`)"}
+      ],
+      "expected_result": "The page returns to its topmost scroll position",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Distinct element and destination assertion from TC-006 (footer's \"Back to top\") even though both target `#top` -- role+name locators disambiguate them (plan.md B4)"
+    },
+    {
+      "id": "TC-006",
+      "title": "Footer \"Back to top\" link scrolls the page back to the top when clicked",
+      "scenario": "S1",
+      "requirements": ["TR-010"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P3",
+      "preconditions": ["Landing page loaded", "Visitor has scrolled to the footer"],
+      "steps": [
+        {"action": "Click the \"Back to top\" link in the footer", "expected": "The page scrolls back to the top (`#top`)"}
+      ],
+      "expected_result": "The page returns to its topmost scroll position",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Distinct element from TC-005 -- verified independently even though the destination is the same"
+    },
+    {
+      "id": "TC-007",
+      "title": "No intercepting modal appears when \"Create account\" is clicked",
+      "scenario": "S1",
+      "requirements": ["TR-004"],
+      "acceptance_criteria": [],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No active session", "Landing page loaded"],
+      "steps": [
+        {"action": "Click \"Create account\" in the header, hero, and closing section, one at a time", "expected": "Navigation to the sign-up screen occurs each time"},
+        {"action": "Inspect the page for any modal dialog appearing before navigation", "expected": "No modal dialog is shown at any point"}
+      ],
+      "expected_result": "No intercepting modal is ever shown -- the design's own modal is explicitly non-production scaffolding",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Negative flow. The design source's own modal copy (\"This prototype covers the landing page only\") confirms the modal must not exist in the real build"
+    },
+    {
+      "id": "TC-008",
+      "title": "Footer FleetIQ mark is plain text and does not navigate when clicked",
+      "scenario": "S1",
+      "requirements": ["TR-010"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P3",
+      "preconditions": ["Landing page loaded", "Visitor has scrolled to the footer"],
+      "steps": [
+        {"action": "Attempt to click the \"FleetIQ\" mark (icon + wordmark) in the footer", "expected": "No navigation, scroll, or focus change occurs -- the element is not a link"}
+      ],
+      "expected_result": "The footer mark is confirmed as plain, non-interactive text, unlike the header's mark (TR-003)",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Negative flow -- asserts absence of an `<a>`/interactive role on the footer mark"
+    },
+    {
+      "id": "TC-009",
+      "title": "Authenticated visitor is redirected to the home page; the landing page is not shown",
+      "scenario": "S2",
+      "requirements": ["TR-002"],
+      "acceptance_criteria": ["unbracketed-4"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["A valid authenticated session exists (real UI sign-in via FLTIQ-35, research.md R5)"],
+      "steps": [
+        {"action": "With an active session, navigate to the root URL", "expected": "The browser is redirected to the visitor's home page"},
+        {"action": "Inspect the rendered page", "expected": "The public landing page content is never rendered, not even briefly"}
+      ],
+      "expected_result": "The visitor lands on their home page; the landing page's content never appears",
+      "test_data": "authenticated_test_account",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Skipped with an explicit reason if FLTIQ-35 is not yet deployed to the target environment (research.md R5) -- never a silent pass"
+    },
+    {
+      "id": "TC-010",
+      "title": "Header \"Sign in\" navigates to the sign-in screen",
+      "scenario": "S2",
+      "requirements": ["TR-005"],
+      "acceptance_criteria": ["unbracketed-3"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No active session", "Landing page loaded"],
+      "steps": [
+        {"action": "Click \"Sign in\" in the header", "expected": "The browser navigates to the sign-in screen (FLTIQ-35)"}
+      ],
+      "expected_result": "The visitor lands on the real sign-in screen; no intercepting modal appears",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Added to match TR-004's existing three-location coverage -- the original Jira AC only enumerated locations for \"Create account\" (spec.md §11 finding)"
+    },
+    {
+      "id": "TC-011",
+      "title": "Hero \"Sign in\" navigates to the sign-in screen",
+      "scenario": "S2",
+      "requirements": ["TR-005"],
+      "acceptance_criteria": ["unbracketed-3"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No active session", "Landing page loaded"],
+      "steps": [
+        {"action": "Click \"Sign in\" in the hero section", "expected": "The browser navigates to the sign-in screen (FLTIQ-35)"}
+      ],
+      "expected_result": "The visitor lands on the real sign-in screen; no intercepting modal appears",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Verified independently of the header instance per TR-005"
+    },
+    {
+      "id": "TC-012",
+      "title": "Closing-section \"Sign in\" navigates to the sign-in screen",
+      "scenario": "S2",
+      "requirements": ["TR-005"],
+      "acceptance_criteria": ["unbracketed-3"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["No active session", "Landing page loaded, scrolled to the closing section"],
+      "steps": [
+        {"action": "Click \"Sign in\" in the closing section", "expected": "The browser navigates to the sign-in screen (FLTIQ-35)"}
+      ],
+      "expected_result": "The visitor lands on the real sign-in screen; no intercepting modal appears",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Verified independently of the header/hero instances per TR-005"
+    },
+    {
+      "id": "TC-014",
+      "title": "Hierarchy explorer pre-selects \"Floor 1\" on first render",
+      "scenario": "S3",
+      "requirements": ["TR-008"],
+      "acceptance_criteria": ["unbracketed-5"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded fresh", "No node has been clicked yet"],
+      "steps": [
+        {"action": "Load the landing page and locate the hierarchy explorer's detail panel", "expected": "The detail panel shows \"Floor 1\"'s information (label, status, devices, type, source, note) with no visitor interaction"}
+      ],
+      "expected_result": "\"Floor 1\" (node `a1`) is pre-selected by default, matching the design source's `state = { selected: 'a1' }`",
+      "test_data": "landing.json (node a1)",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Also the EC-002 edge case from spec.md §5"
+    },
+    {
+      "id": "TC-015",
+      "title": "Selecting a different node updates the detail panel without a full page reload",
+      "scenario": "S3",
+      "requirements": ["TR-008"],
+      "acceptance_criteria": ["unbracketed-5"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded", "Hierarchy explorer visible with \"Floor 1\" selected"],
+      "steps": [
+        {"action": "Click a different node's row, e.g. \"Floor 2\"", "expected": "The detail panel updates to Floor 2's label, status badge, device count, device type, config source and note"},
+        {"action": "Confirm no full page navigation/reload occurred", "expected": "The page's navigation entry and header/footer remain unchanged; only the detail panel content changed"}
+      ],
+      "expected_result": "The detail panel reflects the newly selected node's data with no page reload",
+      "test_data": "landing.json (node a2)",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-016",
+      "title": "No FleetIQ API request fires while interacting with the hierarchy explorer",
+      "scenario": "S3",
+      "requirements": ["TR-008"],
+      "acceptance_criteria": ["unbracketed-5"],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded", "Network request listener attached (research.md R4)"],
+      "steps": [
+        {"action": "Attach a request listener, then select a sequence of different nodes in the hierarchy explorer", "expected": "No `xhr`/`fetch` request fires at any point during the interaction"}
+      ],
+      "expected_result": "Zero network requests are observed while interacting with the hierarchy explorer, confirming it is a static, local-data-only component (NFR-002)",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Asserts \"no XHR/fetch at all\" rather than filtering by host, per research.md R4 -- no `API_BASE_URL` is configured to filter against"
+    },
+    {
+      "id": "TC-017",
+      "title": "Building A and Building B tree rows show a subgroup count distinct from the detail panel's device count",
+      "scenario": "S3",
+      "requirements": ["TR-008"],
+      "acceptance_criteria": ["unbracketed-5"],
+      "type": "Data",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect Building A's tree row (without selecting it)", "expected": "The row's right-aligned text reads \"2 subgroups\""},
+        {"action": "Select Building A", "expected": "The detail panel's \"Devices\" field reads \"79\" -- a different value/meaning from the tree row's \"2 subgroups\""},
+        {"action": "Inspect Building B's tree row (without selecting it)", "expected": "The row's right-aligned text reads \"0 subgroups\""},
+        {"action": "Select Building B", "expected": "The detail panel's \"Devices\" field reads \"0\""}
+      ],
+      "expected_result": "The tree row's `meta` text and the detail panel's `devices` field are confirmed as two distinct fixture fields, never derived from one another",
+      "test_data": "landing.json (nodes a, b)",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "The specific regression case data-model.md flags -- for Floor 1/Floor 2/Unassigned the two fields happen to read alike, but must not be asserted as the same field generally"
+    },
+    {
+      "id": "TC-018",
+      "title": "Selecting a node visually highlights that node's own tree row",
+      "scenario": "S3",
+      "requirements": ["TR-008"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Select a node other than the default (e.g. \"Floor 2\")", "expected": "That node's row shows `aria-pressed=\"true\"` and a distinguishing background/left-edge style; the previously selected row no longer does"}
+      ],
+      "expected_result": "Exactly one tree row is visually marked as selected at any time, independent of and in addition to the detail panel updating",
+      "test_data": "landing.json (node a2)",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Found via the §15a UI Element Enumeration retrofit (spec.md, 2026-09-19). Assert via `aria-pressed`, not exact CSS colour/box-shadow values, since the visual styling is design-system-owned (see plan.md B4/data-model.md)"
+    },
+    {
+      "id": "TC-019",
+      "title": "Selecting the zero-device node (Building B) updates the detail panel without error",
+      "scenario": "S3",
+      "requirements": ["TR-008"],
+      "acceptance_criteria": [],
+      "type": "Functional",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Select \"Building B\"", "expected": "The detail panel renders with Devices \"0\", Type \"—\", status \"Empty\", and its note text -- no blank fields, no console error"}
+      ],
+      "expected_result": "The zero-devices boundary renders correctly rather than blank or erroring",
+      "test_data": "landing.json (node b)",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Boundary case (data-model.md) and EC-006 from spec.md §5"
+    },
+    {
+      "id": "TC-020",
+      "title": "Each of the five hierarchy nodes displays its own exact note text when selected",
+      "scenario": "S3",
+      "requirements": ["TR-008"],
+      "acceptance_criteria": [],
+      "type": "Data",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Select \"Building A\"", "expected": "Note reads \"Subgroups may override the organisation default. Two do.\""},
+        {"action": "Select \"Floor 1\"", "expected": "Note reads \"A change applied here reaches 41 devices. Nothing is applied until you review the diff.\""},
+        {"action": "Select \"Floor 2\"", "expected": "Note reads \"Three devices have not acknowledged the last push. They keep their previous configuration until they do.\""},
+        {"action": "Select \"Building B\"", "expected": "Note reads \"Devices appear here the moment they claim a provisioning token.\""},
+        {"action": "Select \"Unassigned\"", "expected": "Note reads \"Unassigned devices report telemetry but receive no configuration. Place them in a group to give them one.\""}
+      ],
+      "expected_result": "Each node's exact note text renders verbatim, per data-model.md's captured fixture",
+      "test_data": "landing.json (all nodes)",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Each note ties to a specific capability-card claim (data-model.md) -- this case confirms the demo backs up the marketing copy, not just arbitrary text"
+    },
+    {
+      "id": "TC-021",
+      "title": "Selecting \"Unassigned\" (501 devices, the largest fixture value) renders without truncation at 360px",
+      "scenario": "S3",
+      "requirements": ["TR-008", "TR-011"],
+      "acceptance_criteria": ["unbracketed-5", "TIA-AC-74"],
+      "type": "Compatibility",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded at a 360px viewport"],
+      "steps": [
+        {"action": "Select the \"Unassigned\" node", "expected": "The detail panel renders \"501\" in the Devices field with no truncation, overflow, or horizontal scroll introduced"}
+      ],
+      "expected_result": "The largest count in the fixture displays fully at the mandatory minimum viewport width",
+      "test_data": "landing.json (node un)",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Boundary case combining the largest data value (data-model.md) with the 360px viewport requirement (TR-011)"
+    },
+    {
+      "id": "TC-022",
+      "title": "Page renders with no horizontal scroll or truncation at a 360px viewport",
+      "scenario": "S4",
+      "requirements": ["TR-011"],
+      "acceptance_criteria": ["TIA-AC-74"],
+      "type": "Accessibility",
+      "priority": "P1",
+      "preconditions": ["Browser viewport set to 360px width"],
+      "steps": [
+        {"action": "Load the landing page at 360px width", "expected": "No horizontal scrollbar appears"},
+        {"action": "Inspect every section (header, hero, capabilities, hierarchy, closing, footer)", "expected": "No content is truncated or overlapping"}
+      ],
+      "expected_result": "The page is fully usable at the mandatory minimum viewport width",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-023",
+      "title": "Every link, section anchor, and hierarchy-explorer node is reachable and operable via keyboard with a visible focus indicator",
+      "scenario": "S4",
+      "requirements": ["TR-012"],
+      "acceptance_criteria": ["TIA-AC-77"],
+      "type": "Accessibility",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded", "No pointing device used"],
+      "steps": [
+        {"action": "Press Tab repeatedly from the top of the page", "expected": "Focus moves through the header links, hero CTAs, capability cards (if focusable), hierarchy nodes, closing CTAs, and footer links, each showing a visible focus indicator"}
+      ],
+      "expected_result": "Every interactive element is reachable and operable by keyboard alone, with a visible focus indicator at each step",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Tab-order verification via Playwright's keyboard API directly (research.md R3) -- not delegated to axe"
+    },
+    {
+      "id": "TC-024",
+      "title": "No keyboard trap exists anywhere on the page",
+      "scenario": "S4",
+      "requirements": ["TR-012"],
+      "acceptance_criteria": ["TIA-AC-77"],
+      "type": "Accessibility",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Tab forward through every focusable element to the end of the page, then Shift+Tab back to the start", "expected": "Focus always advances/retreats; it never becomes stuck on one element"}
+      ],
+      "expected_result": "No element traps keyboard focus in either direction",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-025",
+      "title": "Text and control-boundary contrast meets WCAG 2.1 AA thresholds",
+      "scenario": "S4",
+      "requirements": ["TR-013"],
+      "acceptance_criteria": ["TIA-AC-80"],
+      "type": "Accessibility",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Run the axe-core-based contrast scan (research.md R3) across the full page", "expected": "Normal text measures at least 4.5:1; large text and control boundaries measure at least 3:1"}
+      ],
+      "expected_result": "No contrast violation is reported anywhere on the page",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Requires the new axe-core-based dependency pinned at /speckit-implement (plan.md B2)"
+    },
+    {
+      "id": "TC-026",
+      "title": "Page remains usable at 200% browser zoom with no content or function lost",
+      "scenario": "S4",
+      "requirements": ["TR-014"],
+      "acceptance_criteria": ["TIA-AC-81"],
+      "type": "Accessibility",
+      "priority": "P2",
+      "preconditions": ["Viewport halved (1920x1080 -> 960x540) to emulate 200% zoom, per research.md R2"],
+      "steps": [
+        {"action": "Load the landing page at the halved viewport", "expected": "All content and functionality (CTAs, hierarchy explorer, nav anchors) remain visible and operable"}
+      ],
+      "expected_result": "No content or function is lost at the 200%-zoom-equivalent viewport",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Confirmed as a requirement by the requester on 2026-09-18 despite not being individually cited in FLTIQ-62's own AC field (spec.md §11)"
+    },
+    {
+      "id": "TC-027",
+      "title": "Hierarchy explorer nodes are selectable via keyboard with the same visible focus indicator as the rest of the page",
+      "scenario": "S4",
+      "requirements": ["TR-012"],
+      "acceptance_criteria": ["TIA-AC-77"],
+      "type": "Accessibility",
+      "priority": "P1",
+      "preconditions": ["Landing page loaded", "No pointing device used"],
+      "steps": [
+        {"action": "Tab to a hierarchy-explorer node", "expected": "The node shows the same visible focus indicator as any other control"},
+        {"action": "Press Enter or Space", "expected": "The node becomes selected and the detail panel updates, identical to a mouse click"}
+      ],
+      "expected_result": "The hierarchy explorer's custom tree control has no keyboard exemption -- it behaves like any other control",
+      "test_data": "landing.json",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "The design implements each node as a native `<button>`, a favourable implementation signal, not itself the requirement (spec.md Scenario 4 negative flow)"
+    },
+    {
+      "id": "TC-028",
+      "title": "Header displays \"Sign in\" before \"Create account\"",
+      "scenario": "S5",
+      "requirements": ["TR-003"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the header's control group", "expected": "\"Sign in\" appears before \"Create account\" in DOM/visual order"}
+      ],
+      "expected_result": "The header's CTA order matches the design source exactly",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Order is the opposite of the hero and closing section (TC-030, TC-033) -- verified per-section, never assumed consistent"
+    },
+    {
+      "id": "TC-029",
+      "title": "Hero renders the exact badge, headline, subhead, and three supporting statistics",
+      "scenario": "S5",
+      "requirements": ["TR-006"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the hero badge", "expected": "Reads exactly \"Multi-tenant device management\""},
+        {"action": "Inspect the headline", "expected": "Reads exactly \"Every device in your fleet, in one hierarchy.\""},
+        {"action": "Inspect the subhead", "expected": "Reads exactly \"One place to define device types, organise thousands of units into groups, and review a configuration change before it lands.\""},
+        {"action": "Inspect the three statistics", "expected": "Read exactly \"500+ devices onboarded in a single import\", \"3 levels of grouping, enforced by the platform\", \"4 roles, from tenant owner to read-only viewer\""}
+      ],
+      "expected_result": "All hero copy matches the approved design verbatim",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "The \"500+ devices\" statistic's factual accuracy (not its presence) is a separate, elective, non-blocking question (spec.md §13b Q1)"
+    },
+    {
+      "id": "TC-030",
+      "title": "Hero displays \"Create account\" before \"Sign in\"",
+      "scenario": "S5",
+      "requirements": ["TR-006"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the hero's CTA group", "expected": "\"Create account\" appears before \"Sign in\" in DOM/visual order"}
+      ],
+      "expected_result": "The hero's CTA order matches the design source exactly -- the reverse of the header",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-031",
+      "title": "Capabilities section renders the exact heading and all six capability cards' copy",
+      "scenario": "S5",
+      "requirements": ["TR-007"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the section heading", "expected": "Reads exactly \"Built for fleets that outgrew the spreadsheet.\""},
+        {"action": "Inspect all six capability cards in order (01-06)", "expected": "Each card's title and body match spec.md TR-007 verbatim, in the numbered order 01 through 06"}
+      ],
+      "expected_result": "The capabilities section's heading and all six cards match the approved design verbatim",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-032",
+      "title": "Hierarchy section renders the exact heading and intro paragraph",
+      "scenario": "S5",
+      "requirements": ["TR-019"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the hierarchy section's heading", "expected": "Reads exactly \"Group once. Configure the group.\""},
+        {"action": "Inspect the intro paragraph", "expected": "Reads exactly \"Devices inherit configuration from the group they sit in, so a change to a floor reaches forty units without touching one of them individually. Unassigned devices stay visible until someone places them.\""}
+      ],
+      "expected_result": "The hierarchy section's heading and intro copy match the approved design verbatim",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "This heading/body was found during a requester screenshot cross-check, not on the first analysis pass (spec.md TR-019)"
+    },
+    {
+      "id": "TC-033",
+      "title": "Closing section displays \"Create account\" before \"Sign in\"",
+      "scenario": "S5",
+      "requirements": ["TR-009"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded, scrolled to the closing section"],
+      "steps": [
+        {"action": "Inspect the closing section's heading and body", "expected": "Heading reads exactly \"Set up your organisation in three steps.\"; body reads exactly \"Sign up, verify your email, name your organisation. You will be adding device types the same afternoon.\""},
+        {"action": "Inspect the closing section's CTA group", "expected": "\"Create account\" appears before \"Sign in\", the same order as the hero and opposite the header"}
+      ],
+      "expected_result": "The closing section's copy and CTA order match the approved design verbatim",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-034",
+      "title": "Footer displays the FleetIQ mark, \"©ACL Digital\" attribution, and \"Back to top\" link",
+      "scenario": "S5",
+      "requirements": ["TR-010"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P3",
+      "preconditions": ["Landing page loaded, scrolled to the footer"],
+      "steps": [
+        {"action": "Inspect the footer", "expected": "The \"F\" icon + \"FleetIQ\" wordmark, \"©ACL Digital\", and a \"Back to top\" link are all present"}
+      ],
+      "expected_result": "All three footer elements are present, structurally distinct from the header (TR-003)",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Presence only -- behaviour of the mark (TC-008) and the link (TC-006) are covered separately"
+    },
+    {
+      "id": "TC-035",
+      "title": "Every visual element resolves to a shared design-system token or component",
+      "scenario": "S5",
+      "requirements": ["TR-015"],
+      "acceptance_criteria": ["unbracketed-6", "FLTIQ-60"],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Perform a component-usage/token audit against the Keel design system (spec.md §11's proposed resolution)", "expected": "No page-specific styling (inline colour/spacing literals) is found"},
+        {"action": "Compare the rendered page against the approved design in a manual visual-regression review (plan.md A3)", "expected": "Visual fidelity matches the design system's tokens and components"}
+      ],
+      "expected_result": "The page is built entirely on shared design-system tokens/components, with no page-specific styling",
+      "test_data": "none",
+      "automatable": false,
+      "automation_status": "Manual",
+      "test_file": "",
+      "notes": "Not independently machine-verifiable via a single Playwright assertion (spec.md §11); a partial automated token/component audit supplements the manual visual-regression review (plan.md A3)"
+    },
+    {
+      "id": "TC-036",
+      "title": "Page copy makes no capability claim exceeding what MVP1 supports",
+      "scenario": "S5",
+      "requirements": ["TR-016"],
+      "acceptance_criteria": ["unbracketed-7"],
+      "type": "Functional",
+      "priority": "P3",
+      "preconditions": ["Landing page loaded", "The MVP1-supported capabilities checklist (spec.md §11) is available"],
+      "steps": [
+        {"action": "Compare every capability claim on the page against the checklist (three levels of grouping, four roles, diff-based review, viewer-timezone audit, tenant isolation as a boundary)", "expected": "No claim on the page exceeds what is on the checklist"}
+      ],
+      "expected_result": "No overclaiming capability is found on the page",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "The \"500+ devices\" statistic's factual accuracy is a separate elective question (§13b Q1), not part of this literal-copy check"
+    },
+    {
+      "id": "TC-037",
+      "title": "No analytics or tracking request is observed during page load or interaction",
+      "scenario": "S5",
+      "requirements": ["TR-017"],
+      "acceptance_criteria": [],
+      "type": "Security",
+      "priority": "P2",
+      "preconditions": ["Network request listener attached"],
+      "steps": [
+        {"action": "Load the page and interact with every CTA and the hierarchy explorer while monitoring outbound network activity", "expected": "No request to a known analytics/tracking endpoint pattern is observed"}
+      ],
+      "expected_result": "The page makes no calls to analytics or tracking services",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": ""
+    },
+    {
+      "id": "TC-038",
+      "title": "No pricing, documentation, blog, contact-form, or demo-request content is present",
+      "scenario": "S5",
+      "requirements": ["TR-017"],
+      "acceptance_criteria": [],
+      "type": "Functional",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the full page for pricing tables, documentation links, a blog section, a contact form, or demo-request content", "expected": "None of these elements are present anywhere on the page"}
+      ],
+      "expected_result": "The page contains none of the explicitly out-of-scope content categories",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Deliberately excludes the hero's \"Free while you set up your first fleet. No card required.\" line -- that line is tracked separately and exclusively under TR-018/TC-039, pending §13a Q1"
+    },
+    {
+      "id": "TC-039",
+      "title": "Hero displays \"Free while you set up your first fleet. No card required.\" beneath the calls to action",
+      "scenario": "S5",
+      "requirements": ["TR-018"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the hero section beneath the calls to action", "expected": "The line \"Free while you set up your first fleet. No card required.\" is present, exactly as designed"}
+      ],
+      "expected_result": "The line renders verbatim beneath the hero CTAs, matching the design source -- authorized to ship as designed by the requester's decision resolving CF-002 (spec.md Clarifications, 2026-09-21)",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Converted 2026-09-21 from a Blocked placeholder once CF-002 was resolved. TC-038 explicitly excludes this line from its own check -- it is asserted here only, not duplicated."
+    },
+    {
+      "id": "TC-041",
+      "title": "Page remains usable with no content loss at 360px combined with 200% zoom",
+      "scenario": "S4",
+      "requirements": ["TR-011", "TR-014"],
+      "acceptance_criteria": ["TIA-AC-74", "TIA-AC-81"],
+      "type": "Accessibility",
+      "priority": "P2",
+      "preconditions": ["Viewport set to 360px width, further halved to emulate 200% zoom (180px-equivalent content area, per research.md R2)"],
+      "steps": [
+        {"action": "Load the landing page at the combined boundary viewport", "expected": "No horizontal scroll is introduced beyond what 360px alone requires, and no content or function is lost"}
+      ],
+      "expected_result": "The combined boundary of the two individually-required conditions still renders usably",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "EC-005 from spec.md §5 -- a boundary combination of TR-011 and TR-014, not a new expected result"
+    },
+    {
+      "id": "TC-042",
+      "title": "Skeleton loader displays while auth state resolves at first paint",
+      "scenario": "S1",
+      "requirements": ["TR-020"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P3",
+      "preconditions": ["The auth-check network request is intercepted and delayed (e.g. Playwright route handler) to create a reliably observable loading window"],
+      "steps": [
+        {"action": "Navigate to the root URL with the auth-check request delayed", "expected": "A skeleton loader is visible immediately, before either the landing page or an authenticated redirect renders"},
+        {"action": "Allow the delayed auth-check to resolve", "expected": "The skeleton loader is replaced by the correct outcome -- the landing page (TR-001) for an unauthenticated visitor, or the home-page redirect (TR-002) for an authenticated one"}
+      ],
+      "expected_result": "A skeleton loader is shown during the auth-resolution window, regardless of the eventual authenticated/unauthenticated outcome",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Converted 2026-09-21 from a Blocked placeholder once §13b Q2 was answered (\"skeleton loader\"), resolving EC-001 and creating TR-020 -- a wholly new requirement, not previously named by any source. Test-mechanics note: the real auth check likely resolves too quickly to observe naturally in a test run; intercept and delay the underlying request to make the window reliably observable, mirroring the network-interception technique already used for TR-008 (research.md R4)."
+    },
+    {
+      "id": "TC-043",
+      "title": "[BLOCKED] Hierarchy explorer behaviour if its client-side script fails to load",
+      "scenario": "S3",
+      "requirements": [],
+      "acceptance_criteria": [],
+      "type": "Functional",
+      "priority": "P2",
+      "preconditions": ["Not executed while blocked"],
+      "steps": [
+        {"action": "Do not execute this case until spec.md §13b Q3 is answered and EC-003 states a fallback behaviour", "expected": "N/A -- placeholder only, no assertion is made"}
+      ],
+      "expected_result": "BLOCKED -- narrowed 2026-09-21: the requester confirmed the rest of the page (header/hero/closing CTAs) functions independent of the explorer's script, resolving the shared-JS-bundle risk this note originally flagged. What appears in the explorer's own place on failure remains unspecified by any source; asserting one would fabricate a product behaviour no source defines. This row exists so that remaining half of EC-003 stays visible rather than silently vanishing.",
+      "test_data": "none",
+      "automatable": false,
+      "automation_status": "Blocked",
+      "blocked_reason": "EC-003 from spec.md §5 -- the explorer's own fallback UI (or absence of one) is unspecified by any source, including the design. The rest-of-page-functions-independently half of §13b Q3 was answered 2026-09-21; this narrower remainder was not.",
+      "test_file": "",
+      "notes": "The header/hero/closing-section CTAs' shared-JS-bundle risk (originally noted here) is resolved -- the requester confirmed they are not blocked by an explorer script failure. Untraced to any TR-xxx by design -- EC-003 has none; see the Completion Report's note on this warning."
+    },
+    {
+      "id": "TC-044",
+      "title": "Header displays \"Capabilities\" and \"Hierarchy\" as section-anchor links",
+      "scenario": "S5",
+      "requirements": ["TR-003"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Inspect the header's nav area, between the product mark and the Sign in/Create account controls", "expected": "\"Capabilities\" and \"Hierarchy\" both render as clickable links (`<a>` elements), not plain text"}
+      ],
+      "expected_result": "Both section-anchor links are present in the header, matching TR-003's explicit requirement that the header renders \"the section anchors (Capabilities, Hierarchy)\"",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Presence only, per TR-003's own text -- the click-to-scroll behaviour these links produce is explicitly waived (EC-004, spec.md §5): guaranteed by the HTML anchor-link standard, not a distinct product requirement, and TC-040 (which tested that) was correctly removed on 2026-09-21. This case covers what a coverage review found genuinely missing: TR-003 requires these two links to exist, and no prior case asserted that they do."
+    },
+    {
+      "id": "TC-045",
+      "title": "Header \"Capabilities\" and \"Hierarchy\" links each navigate to their own correct, distinct section",
+      "scenario": "S1",
+      "requirements": ["TR-003"],
+      "acceptance_criteria": [],
+      "type": "UI",
+      "priority": "P2",
+      "preconditions": ["Landing page loaded"],
+      "steps": [
+        {"action": "Click \"Capabilities\" in the header", "expected": "The page scrolls to the Capabilities section -- confirmed by the heading \"Built for fleets that outgrew the spreadsheet.\" (TR-007) becoming visible, not the Hierarchy section"},
+        {"action": "From the top of the page, click \"Hierarchy\" in the header", "expected": "The page scrolls to the Hierarchy section -- confirmed by the heading \"Group once. Configure the group.\" (TR-019) becoming visible, not the Capabilities section"}
+      ],
+      "expected_result": "Each link navigates to its own correct, distinct section; neither lands on the other's destination",
+      "test_data": "none",
+      "automatable": true,
+      "automation_status": "Not Started",
+      "test_file": "",
+      "notes": "Distinct from EC-004's waiver (spec.md §5, narrowed 2026-09-21): EC-004 correctly waives testing that anchor-link scrolling works as a GENERIC browser mechanism. This case tests something browsers do not guarantee -- that this specific link is wired to this specific section's id, not swapped or mistyped -- verified against the design source's explicit href=\"#capabilities\"/id=\"capabilities\" and href=\"#hierarchy\"/id=\"hierarchy\" pairing, the same evidentiary basis TC-005 already uses for the product mark's href=\"#top\". Found via a requester screenshot walkthrough, 2026-09-21."
+    }
+  ]
+}

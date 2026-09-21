@@ -53,7 +53,7 @@
 
 ## Readiness
 
-- [ ] No unresolved §13a blocking item on a P1 requirement — **one blocking item is open (Q1), but it blocks TR-018 (P2), not a P1 requirement — does not block the requirement-analysis gate per constitution XI.b, but must be resolved before TR-018 is automated or before this page ships**
+- [x] No unresolved §13a blocking item on a P1 requirement — **§13a is now empty; Q1 was resolved 2026-09-21 (requester decision, TR-018 → DEFINED)**
 - [x] Risk analysis complete, with test focus per risk
 - [x] Entry and exit criteria are concrete and checkable
 - [x] No implementation detail has leaked into the spec
@@ -67,3 +67,4 @@
 - Four elective (non-blocking) questions remain open — cross-epic statistic accuracy, auth-loading state, hierarchy-explorer failure fallback, and static-data permanence. None blocks a P1 requirement.
 - **All 4 open questions (§13a Q1 blocking + §13b Q2/Q3/Q4 elective) were sent to the team on 2026-09-18; answers are pending.** Per constitution §XI.b, this does not block moving to `/speckit-plan` — the sole blocking item affects TR-018 (P2), and every P1 requirement is fully DEFINED with no open blocking clarification.
 - Items left incomplete must be resolved before `/speckit-clarify` or `/speckit-plan`. *(Note: per the point above, this project's own gate does not require these specific items resolved before `/speckit-plan`, since none blocks a P1 — the standard checklist language is retained here as the general rule, with the exception noted explicitly.)*
+- **Update, 2026-09-21**: all 5 questions above (§13a Q1 + §13b Q1-Q4) are now answered via `/speckit-clarify` — see `spec.md`'s `## Clarifications` and Change Log. §13a Q1 and §13b Q2 resolved with real new requirement content (TR-018, TR-020 respectively); §13b Q1/Q3/Q4 closed with varying degrees of directness (see the Testability Review rows for each). `spec.md`/`plan.md` are `Status: In Review`, pending fresh approval of this new content — not `Approved`.
