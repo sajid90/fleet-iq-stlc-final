@@ -153,6 +153,16 @@ High-signal findings only. Cap at 50; summarise the overflow.
 
 - `TR-xxx` with **zero** test cases
 - **P1** requirement with no **P1** case
+- **A `TR-xxx` naming more than one distinct element/clause in its own text (a
+  list, or a compound sentence joined by "and") where at least one named
+  element has no case referencing it, even though the `TR-xxx` overall has
+  some coverage.** `TR-xxx` with *zero* cases is caught above; this catches
+  the harder case — *partial* coverage that reads as complete because the
+  requirement isn't orphaned, it's just incompletely decomposed. Check by
+  reading the `TR-xxx`'s row in `spec.md` §3 clause by clause against every
+  case citing it, not by confirming a citation count > 0. This is precisely
+  how FLTIQ-62's "Capabilities"/"Hierarchy" nav links went uncovered for two
+  full review cycles: TR-003 had cases, just not one per named element.
 - Scenario with positive coverage but **no negative** case
 - Edge case in §5 with no case
 - NFR in §8 with no case and no written waiver
@@ -160,6 +170,15 @@ High-signal findings only. Cap at 50; summarise the overflow.
 - `automatable: true` case with no task in `tasks.md`
 - Task with a `covers:` id that does not exist in `test-cases.json`
 - Scenario-phase task missing its `covers:` clause entirely
+- **An `EC-xxx` from `spec.md` §5 with real, existing test coverage
+  (confirmed via a `test-cases.json` note or `requirements`/citation) that
+  has no row of its own in `tasks.md`'s Traceability table.** Count `spec.md`
+  §5's edge cases and `tasks.md`'s Traceability table's `EC-xxx` rows
+  separately and compare — do not assume they match because most of them do.
+  This is a documentation-completeness gap, not a coverage gap (the test
+  itself is fine) — but it is exactly how FLTIQ-62's table under-reported 4
+  of its 6 edge cases: rows were added only when that edge case needed a fix,
+  never as a systematic sweep once the others were already correct.
 
 #### B. Automation drift *(when `automation/` exists)*
 
@@ -249,11 +268,43 @@ per Change Log entry, exactly which `TC-xxx`/task/test the model shows
 referencing that `TR-xxx`, and whether each still holds, needs a targeted
 update, or is now orphaned — this *is* constitution XIII Step 4's check.
 
+#### I. Invented / Unsupported Test Behaviour *(constitution I/II)*
+
+- A test case citing a `TR-xxx` whose own text does not establish the
+  specific behaviour the case asserts — a borrowed or nearby-sounding
+  citation rather than one that actually matches. Check by reading the
+  `TR-xxx`'s row in `spec.md` §3 against the case's `expected_result`
+  directly, not by trusting that a citation exists.
+- A `TR-xxx`, scenario, or test case whose only support (per `spec.md`'s own
+  Source column, or `source-manifest.json`) is industry/QA best practice, a
+  security convention not adopted in writing by an approved source, generic
+  UX/navigation/session/error-handling convention, another application's
+  behaviour, or a previous FleetIQ ticket/feature/test suite — none of these
+  is one of the nine sources in constitution I.
+- An expected result reflecting only `OBSERVED` implementation behaviour with
+  no approved source establishing that it is *required* — observation
+  redefining intent (constitution II hard stops 1–2).
+- A requirement or edge case classed `INFERRED` that nonetheless carries a
+  concrete expected result instead of test-mechanics-only content
+  (constitution II).
+- A test case, scenario, or requirement for a page, screen, or feature absent
+  from the resolved source set entirely.
+
+Found in `test-cases.json` → always **CRITICAL** (it is already
+automation-adjacent, not a draft). Found only in `spec.md`'s Test Scenarios,
+not yet a test case → **CRITICAL** if it would produce an executable
+assertion as written, **HIGH** if it is already flagged in the Testability
+Review pending clarification. The recommendation is always to **remove the
+requirement/scenario/test case, or return it to `/speckit-clarify`** as an
+open question — never to invent a source or reclassify it `DEFINED` to clear
+the finding.
+
 ### 5. Severity
 
 - **CRITICAL** — violates a constitution MUST; a P1 requirement with zero
   coverage; a case claiming `Automated` with no test behind it; a bypassed
-  post-approval gate (category H)
+  post-approval gate (category H); an invented/unsupported test behaviour
+  found in `test-cases.json` (category I)
 - **HIGH** — a requirement with no coverage; a missing negative path on a P1
   scenario; conflicting requirements; an untestable expected result; a
   Change Log blast-radius claim contradicted by the traceability model
@@ -302,6 +353,9 @@ One row per finding, with stable ids prefixed by category initial.
 - Bypassed gate (category H) → the artifact's owner re-classifies the Change
   Log entry, or re-approves it (fresh `Approved by`/`Approved on`) — no
   downstream phase should proceed in the meantime
+- Invented/unsupported behaviour (category I) → remove the requirement/
+  scenario/test case, or return to `/speckit-clarify` to raise it as an open
+  question — never invent a source or reclassify it to clear the finding
 - Only LOW/MEDIUM → safe to proceed, with the improvements listed
 
 Give explicit commands, not general advice.

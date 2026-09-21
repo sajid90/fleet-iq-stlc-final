@@ -145,6 +145,14 @@ Phase 1 (Environment)
 
 ## Traceability
 
+<!--
+  One row per TR-xxx AND one row per EC-xxx from spec.md -- both lists,
+  exhaustively, built now rather than added one at a time whenever an item
+  happens to need a fix later. An edge case that never needs fixing still
+  needs a row; that's precisely the kind of row a reactive table forgets.
+-->
+
 | Requirement | Scenario | Test Cases | Automation Task | Test File |
 |-------------|----------|------------|-----------------|-----------|
 | TR-001 | S1 | TC-001, TC-002 | T009, T010 | `automation/tests/ui/test_[feature].py` |
+| EC-001 | S1 | TC-004 | T011 | `automation/tests/ui/test_[feature].py` |

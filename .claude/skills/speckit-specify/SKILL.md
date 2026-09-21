@@ -385,6 +385,25 @@ disposition: a bare `TR-xxx`, an explicit exclusion with a reason
 (scaffolding, out of scope, duplicate of another row), or an open-question
 reference (§13a/§13b).
 
+**One disposition per fact, not per element.** An enumerated row routinely
+mixes a genuinely generic, standard-guaranteed mechanism (waivable, INFERRED)
+with a FleetIQ-specific fact about the *same* element — that this element
+*exists*, or *which* value/target it carries (never waivable; if a source
+names it, it earns a disposition). Never let a single row's disposition apply
+to the whole bundle just because it's one DOM element. Concretely: a nav link
+whose *click-scroll behaviour* is standard anchor mechanics (waivable) can
+still have an *existence* and a *specific target* that a source explicitly
+names (e.g. "the section anchors (Capabilities, Hierarchy)") — that part gets
+its own bare-`TR-xxx` disposition, not a free ride on the mechanism's waiver.
+When a `TR-xxx`'s own text names **more than one** distinct element or clause
+(a list, or a compound sentence joined by "and"), each named item gets
+checked and dispositioned **individually** — a bare reference for each is not
+optional just because the row as a whole already has one. This is exactly the
+failure mode FLTIQ-62 hit: the two nav links were correctly enumerated, then
+folded entirely into an edge case's waiver instead of also getting their own
+`TR-003` disposition for existence and target — an oversight the Step 8
+checklist below is now built to catch.
+
 **Two hard halts, mirroring 1F.2's precedent:**
 
 - A `presentation-and-interaction` source was retrieved, but §15a is absent
@@ -632,6 +651,50 @@ manifest's `conflicts[]`.
   §11 and §13a, not a gap for you to fill silently.
 - Write for a reviewer who has not read the ticket.
 
+#### 6.3 Source-backed scenario validation (mandatory, before Step 7)
+
+Before any `TR-xxx`, test scenario, acceptance scenario, edge case, boundary
+condition, or expected result is written into `spec.md`, it must complete
+this chain (constitution I):
+
+```
+Scenario / TR-xxx  ->  Source  ->  Jira Story / Epic / PRD / Decision Log /
+                                    Design / linked or sub-task issue
+```
+
+Every scenario carries, at minimum: a scenario id, the `TR-xxx` it covers, the
+source reference that establishes the behaviour, the acceptance-criterion id
+where one exists, and its evidence classification (DEFINED / OBSERVED /
+INFERRED / UNDEFINED). If the chain cannot be completed, **do not write it as
+a product scenario** — reclassify it UNDEFINED and place it in §13
+(Open Questions) instead, per the Observation Rule at the top of this Outline.
+
+**None of the following ever completes the chain on their own** — they are
+useful QA judgement, not a source, and constitution II hard stop 5 already
+says so explicitly:
+
+- industry or QA best practice, or a security convention (OWASP or otherwise)
+  the project has not adopted in writing
+- generic authentication, session, navigation, browser, or error-handling
+  behaviour
+- generic accessibility expectations the project has not adopted
+- an assumed redirect, landing page, timeout, or logout/session-expiry
+  behaviour
+- a page, screen, or feature not present in the resolved source set
+- behaviour carried over from an unrelated FleetIQ feature, a previous
+  ticket, a previous test suite, or a previous project
+- an example inside a template or this skill file, copied as if it were this
+  feature's own content
+- your own judgement of a **"reasonable default"** — this phrase, or its
+  effect, must never justify a product requirement or expected result
+
+If a behaviour seems worth testing but nothing above establishes it, that
+feeling is real and belongs in §13b as an elective question — it is evidence
+of a genuine gap, not license to write the scenario anyway. The distinction
+is exactly "this would be a useful test" versus "this is a required product
+behaviour" (constitution II); only the second may become a `TR-xxx`, a
+scenario, or an expected result.
+
 ### Step 7: Write the spec and the source manifest
 
 Write `SPEC_FILE` using the template structure, replacing placeholders with
@@ -670,6 +733,8 @@ not a bare date), `field_map`, `provenance_rules`, `sources`,
 
 - [ ] Every requirement traces to a named source id (acceptance criterion, PRD section, or ticket field)
 - [ ] Every requirement carries an Authority and a Class
+- [ ] Every `TR-xxx`, scenario, edge case and boundary condition completes the `Scenario -> TR-xxx -> Source` chain (6.3); none rests on industry practice, an assumed redirect/session/navigation behaviour, an unrelated feature, a previous ticket/test suite, or a "reasonable default"
+- [ ] No `TR-xxx` was created, or an existing one attached, solely to give a scenario a citation it would not otherwise have
 - [ ] `source-manifest.json` exists and is valid JSON
 - [ ] `field_map` records how each custom field was resolved, with `matched_by`
 - [ ] No `customfield_NNNNN` literal appears anywhere in the spec
@@ -686,6 +751,8 @@ not a bare date), `field_map`, `provenance_rules`, `sources`,
 - [ ] Every pass in §15a states its count and how that count was derived
 - [ ] Every UI element in every in-scope screen appears in §15a with a disposition (bare `TR-xxx`, exclusion with reason, or open-question reference)
 - [ ] Every interactive-element row in §15a names a behaviour, not a presence
+- [ ] Every `TR-xxx` that names more than one distinct element/clause in its own text (a list, or a compound sentence joined by "and") has each one individually traceable to a disposition — not just the row as a whole
+- [ ] No enumerated row's disposition lets a waivable generic mechanism (e.g. standard anchor-scroll behaviour) also waive that same element's existence or specific target/value, where a source names either
 - [ ] §3a states the acceptance-criterion count per source and how it was derived
 
 ## Testability
@@ -856,6 +923,7 @@ Report to the user:
 - [ ] No undefined business requirement converted into an assumption
 - [ ] Every source conflict recorded, none silently resolved
 - [ ] `spec.md` written with TR ids, scenarios, risks and a completed Testability Review
+- [ ] Every scenario/TR/edge case passed the 6.3 source-backed validation gate before being written; nothing invented from industry practice, an unrelated feature, or a prior ticket/test suite
 - [ ] Quality checklist created and all items passing, or remaining gaps reported
 - [ ] Extension hooks dispatched or skipped per the rules above
 - [ ] Completion reported with paths and next phase

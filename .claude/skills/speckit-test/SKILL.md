@@ -105,6 +105,13 @@ Parse the pytest output and `reports/allure-results/*-result.json` for:
 Map every result back to its `TC-xxx` using the `@allure.testcase` id or the
 test function name, and roll up by priority and by scenario.
 
+**Before rolling up requirement coverage**, confirm each mapped `TC-xxx`
+cites at least one `TR-xxx` that actually exists in `spec.md` §3. A result
+mapping to no `TR-xxx`, or to one absent from `spec.md`, is an
+**orphan/unsupported test** (Step 5) — exclude it from requirement-coverage
+rollups. Its pass or fail proves something ran; it proves nothing about
+product requirement coverage (constitution I).
+
 ### Step 5: Triage every failure
 
 For each failure, decide and record which it is:
@@ -116,6 +123,7 @@ For each failure, decide and record which it is:
 | **Requirement defect** | The approved requirement/source set is contradictory or untestable | Return to `/speckit-clarify`; do not weaken the test |
 | **Environment issue** | Data, config, deployment, network | Fix the environment; re-run and say the result changed |
 | **Flaky** | Passes and fails without a code change | Investigate the race; quarantine only with an owner and a ticket |
+| **Orphan/unsupported test** | The test's `TC-xxx` has no `TR-xxx`, cites one absent from `spec.md`, or `spec.md` traces that `TR-xxx` to no authoritative source (constitution I) | A process/test-artifact defect, not a product or test-logic defect — its result is reported separately and never counted toward requirement coverage; recommend `/speckit-analyze` (category I) or `/speckit-tasks` to remove or properly trace it |
 
 Never classify a failure as flaky just because a rerun passed — confirm the
 non-determinism and name its cause. Never weaken an assertion to clear a
@@ -167,6 +175,11 @@ Compare the run against `spec.md` §10 exit criteria and the `plan.md` §B6
 quality gate. State each criterion, its target, the actual value, and whether
 it was met.
 
+**Requirement coverage counts only executed tests whose `TC-xxx` traces to a
+real, source-backed `TR-xxx`** — an orphan/unsupported test's result (Step 5)
+is reported separately and never inflates the coverage percentage, even if it
+passed. A Go verdict built on inflated coverage is not defensible evidence.
+
 Then give one verdict:
 
 - **Go** — every exit criterion met
@@ -199,7 +212,8 @@ Report:
 
 - [ ] Suite executed and results captured in `reports/allure-results`
 - [ ] Allure HTML generated, or its absence explained with the fix
-- [ ] Every failure triaged into product / test / environment / flaky
+- [ ] Every failure triaged into product / test / environment / flaky / orphan-unsupported
+- [ ] Requirement coverage excludes any orphan/unsupported test result
 - [ ] Execution report written to `FEATURE_DIR/reports/`
 - [ ] `test-cases.json` updated with this cycle's results and the workbook regenerated
 - [ ] Exit criteria assessed and a Go/No-Go verdict given

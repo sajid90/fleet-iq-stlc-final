@@ -17,6 +17,26 @@ No test exists without a requirement. No requirement ships untested or
 explicitly waived in writing. Any orphan on either side is a defect in the
 process and must be resolved before the exit gate.
 
+**The chain runs in both directions, and both are checked at creation time,
+not only at the exit gate.** A requirement traces down to a source — one of
+the nine authorities in the precedence table below. A test case traces up
+through its requirement to that same source:
+
+```
+Test Case  ->  Requirement (TR-xxx)  ->  Source  ->  Jira Story / Epic / PRD /
+                                                      Decision Log / Design /
+                                                      linked or sub-task issue
+```
+
+A test case, scenario, or requirement that cannot complete this chain is an
+orphan by definition — not a defect to fix later, but one to **reject before
+it is written**. **Never create a `TR-xxx` — however plausible-sounding —
+solely to give an already-imagined test case something to cite, and never
+attach an existing `TR-xxx` merely because it is nearby or sounds related.** A
+citation is valid only when the cited requirement's own text establishes the
+exact behaviour the test asserts, not merely a neighbouring or thematically
+similar one.
+
 **Every requirement names the source that authorised it.** The resolved source
 set for a feature is recorded in `source-manifest.json` — what was retrieved,
 from where, when, and with what authority. A source that could not be retrieved
@@ -77,7 +97,7 @@ target, response shape, observed latency.
 | No | form only, following deterministically from a standard, the framework or the environment | **INFERRED** | Test *mechanics* only — waits, fixtures, selectors, environment config. **Never an expected result.** |
 | No | existence/intent unresolved | **UNDEFINED** | Nothing. Record the requirement with `Expected result: UNDEFINED`, raise a blocking clarification, and write no test case that asserts an outcome. |
 
-**Four hard stops:**
+**Five hard stops:**
 
 1. Observation may never *create* a requirement. If no approved source says the
    behaviour must exist, observing that it happens produces a note, not a
@@ -92,6 +112,17 @@ target, response shape, observed latency.
    data provisioning, tooling, scheduling. A statement of product intent may
    never be recorded as an assumption. **Never convert an undefined business
    requirement into an assumption just to continue.**
+5. **Only the nine sources in principle I's precedence table can establish a
+   product behaviour.** Industry or QA best practice, a security convention
+   (OWASP or otherwise) not adopted in writing by an approved source, generic
+   UX/navigation/session/error-handling convention, common web or framework
+   behaviour, another application's behaviour, a previous FleetIQ ticket,
+   feature, or test suite, a template's example content, or a "reasonable
+   default" the analysis judged sensible are never a source, however
+   plausible or well-established the behaviour is elsewhere. Where none of
+   the nine applies, the behaviour is UNDEFINED — recorded as an open
+   question, never quietly written into a spec, scenario, or test case on the
+   reasoning that it "would be a useful test." Usefulness is not authority.
 
 **The designated-observation exception.** Where a system has *no* approved
 requirement source and the running application is the agreed source of record
@@ -301,10 +332,23 @@ compliance. Where a deviation is genuinely warranted, it is recorded in the
 plan's Complexity Tracking table with the simpler alternative that was rejected
 and why. Undocumented deviation is not permitted.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-19
+**Version**: 1.2.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-21
 
 ### Amendment history
 
+- **1.2.0** (2026-09-21, MINOR): Strengthened principle I (the bidirectional
+  `Test Case -> Requirement -> Source` chain, made explicit; an incomplete
+  chain is rejected at creation, not fixed later; never invent or borrow a
+  `TR-xxx` for traceability) and principle II (fifth hard stop: only the nine
+  precedence-table sources establish a product behaviour — industry practice,
+  security/UX/navigation convention, another application, a prior ticket or
+  test suite, and "reasonable defaults" are never one). Prompted by two
+  concrete invented-scenario incidents on FLTIQ-62 found only by user
+  question — a session-expiry redirect with no supporting requirement, and an
+  anchor-scroll test built on generic browser behaviour with a borrowed
+  `TR-003` citation. Neither the requirement-authority chain nor the
+  evidence-classification rule changes; both are stated more explicitly so
+  the same class of invention is caught before it is written, not after.
 - **1.1.0** (2026-09-19, MINOR): Added principle XIII, Post-Approval Change
   Control. Prompted by FLTIQ-62's own `spec.md` needing a real post-approval
   edit (the §15a retrofit's one new finding) with no written rule for how to

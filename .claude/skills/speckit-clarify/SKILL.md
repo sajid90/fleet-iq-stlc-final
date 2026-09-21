@@ -182,14 +182,29 @@ standing on a spec that just had its scope changed underneath it.
    - The same concept named differently across sections
    - Domain terms used without definition
 
-   For each **Partial** or **Missing** category, first check whether the
-   answer is something you can determine yourself — the live system's actual
-   behaviour, a documented default, a well-known convention for the platform
-   referenced. If so, resolve it directly (record it in the spec as an
-   observed/assumed behaviour) instead of creating a question. Only create a
-   candidate question for what is genuinely undecidable this way, is not a
+   For each **Partial** or **Missing** category, first apply the Observation
+   Rule's own Q1 (constitution II): does an approved source already establish
+   that this behaviour must exist? Only if yes — and only the concrete *form*
+   is unresolved — may you resolve it yourself, by observing the live system
+   (record it as OBSERVED, citing both the observation and the source that
+   mandates it) or from a genuine framework/environment default that is pure
+   test mechanics (record it as INFERRED). **A "well-known convention for the
+   platform," an industry-standard behaviour, or a "documented default" is
+   never itself grounds to resolve a Partial/Missing category** — none of
+   those is a source (constitution II hard stop 5), and writing one in as if
+   it were an observed or assumed behaviour is exactly the invented-scenario
+   failure this command exists to catch, not create. Where Q1's answer is no,
+   the gap is a genuine candidate question — create one, don't paper over it.
+   Only skip creating a question for what is answerable this way, is not a
    product-design choice you'd be asking the user to make on the developer's
    behalf, and would not be better resolved at `/speckit-plan`.
+
+   **Legitimate vs. not, concretely**: *"Should an expired session redirect to
+   the login page?"* is a legitimate clarification question when no source
+   answers it — that's Q1 failing, genuinely UNDEFINED. *"What does the Jira
+   acceptance criterion mean?"* when the AC already states the answer is not
+   a clarification question at all — that's Q1 already satisfied; read the
+   source again rather than asking the user to restate it.
 
 4. Build an internal, prioritised queue. The **budget of 5** applies to
    *elective* precision questions; unresolved source conflicts and UNDEFINED
@@ -323,8 +338,13 @@ standing on a spec that just had its scope changed underneath it.
 - Do not ask automation-tooling questions — framework choices belong in
   `/speckit-plan`. Ask only if the absence blocks knowing *what* to verify.
 - Do not ask the user to decide how an already-existing/live product should
-  behave — determine that from the real system instead. Ask the user only
-  about QA scope, priority, or business intent that only they can decide.
+  behave **when an approved source already requires the behaviour and only its
+  concrete form is unclear** — determine the form from the real system
+  instead (OBSERVED). This is never license to resolve *whether* a behaviour
+  exists, or *what* it should be, from the system alone — that is
+  observation overriding intent (constitution II hard stop 1/2), and stays a
+  question. Ask the user only about QA scope, priority, or business intent
+  that only they can decide.
 - Respect early termination ("stop", "done", "proceed").
 - If the quota is reached with high-impact categories unresolved, flag them
   explicitly under **Deferred** with the risk each one carries.
