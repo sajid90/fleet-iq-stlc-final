@@ -1,6 +1,6 @@
 # Test Cases: FLTIQ-62 — Build the public landing page
 
-**Generated**: 2026-09-21T20:45:00 | **Total**: 43
+**Generated**: 2026-09-22T02:15:00 | **Total**: 43
 
 > Generated from `test-cases.json`. Do not edit by hand — edit the JSON and re-export.
 
@@ -488,9 +488,9 @@
 
 | # | Action | Expected |
 |---|--------|----------|
-| 1 | Inspect the header's control group | "Sign in" appears before "Create account" in DOM/visual order |
+| 1 | Inspect the header's control group | The controls read exactly "Sign in" then "Create account", in that order |
 
-**Expected result**: The header's CTA order matches the design source exactly
+**Expected result**: The header's CTA labels and their order match the design source exactly, case included
 
 ---
 
@@ -525,9 +525,9 @@
 
 | # | Action | Expected |
 |---|--------|----------|
-| 1 | Inspect the hero's CTA group | "Create account" appears before "Sign in" in DOM/visual order |
+| 1 | Inspect the hero's CTA group | The CTAs read exactly "Create account" then "Sign in", in that order |
 
-**Expected result**: The hero's CTA order matches the design source exactly -- the reverse of the header
+**Expected result**: The hero's CTA labels and their order match the design source exactly -- the reverse order of the header
 
 ---
 
@@ -551,7 +551,7 @@
 
 ## TC-032 — Hierarchy section renders the exact heading and intro paragraph
 
-**Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-019
+**Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-019, TR-008
 
 **Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc032_hierarchy_exact_copy`)
 
@@ -562,8 +562,9 @@
 |---|--------|----------|
 | 1 | Inspect the hierarchy section's heading | Reads exactly "Group once. Configure the group." |
 | 2 | Inspect the intro paragraph | Reads exactly "Devices inherit configuration from the group they sit in, so a change to a floor reaches forty units without touching one of them individually. Unassigned devices stay visible until someone places them." |
+| 3 | Inspect the hierarchy panel's own header line, above the node rows | Reads exactly "XYZ — organisation" |
 
-**Expected result**: The hierarchy section's heading and intro copy match the approved design verbatim
+**Expected result**: The hierarchy section's heading and intro copy match the approved design verbatim, and the tree panel's own header line reads "XYZ — organisation" exactly
 
 ---
 
@@ -579,9 +580,9 @@
 | # | Action | Expected |
 |---|--------|----------|
 | 1 | Inspect the closing section's heading and body | Heading reads exactly "Set up your organisation in three steps."; body reads exactly "Sign up, verify your email, name your organisation. You will be adding device types the same afternoon." |
-| 2 | Inspect the closing section's CTA group | "Create account" appears before "Sign in", the same order as the hero and opposite the header |
+| 2 | Inspect the closing section's CTA group | The CTAs read exactly "Create account" then "Sign in", the same order as the hero and opposite the header |
 
-**Expected result**: The closing section's copy and CTA order match the approved design verbatim
+**Expected result**: The closing section's copy and CTA labels/order match the design source exactly
 
 ---
 
@@ -607,17 +608,18 @@
 
 **Priority**: P2 | **Type**: UI | **Scenario**: S5 | **Requirements**: TR-015 | **Jira AC**: unbracketed-6, FLTIQ-60
 
-**Automation**: Manual
+**Automation**: Automated (`automation/tests/ui/test_landing.py::test_tc035_design_system_token_application`)
 
 **Preconditions**:
 - Landing page loaded
 
 | # | Action | Expected |
 |---|--------|----------|
-| 1 | Perform a component-usage/token audit against the Keel design system (spec.md §11's proposed resolution) | No page-specific styling (inline colour/spacing literals) is found |
-| 2 | Compare the rendered page against the approved design in a manual visual-regression review (plan.md A3) | Visual fidelity matches the design system's tokens and components |
+| 1 | Compare each surface's rendered background against the Keel token the design source declares for it (body, header, stats section, capabilities grid, capability card, hierarchy panel, closing section, footer) | Every surface resolves to its declared token: --keel-bg #F7F8FA for the page, --keel-surface #FFFFFF for header/stats/cards/panel/footer, --keel-deck-navy #000D35 for the closing section, and no background on the capabilities grid |
+| 2 | Check that capability cards and the hierarchy panel carry a 1px --keel-border border, --keel-radius-lg radius and --keel-shadow-sm shadow, and that the header carries a bottom border | All present |
+| 3 | Compare the rendered page against the approved design in a manual visual-regression review (plan.md A3) | Visual fidelity matches the design system's tokens and components |
 
-**Expected result**: The page is built entirely on shared design-system tokens/components, with no page-specific styling
+**Expected result**: The page is built entirely on shared design-system tokens/components, with each token applied to the property the design declares it for, and no page-specific styling
 
 ---
 

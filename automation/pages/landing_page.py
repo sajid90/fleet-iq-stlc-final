@@ -133,11 +133,32 @@ class LandingPage(BasePage):
     def hierarchy_intro_text(self) -> str:
         return self.text_of(self.page.locator(L.HIERARCHY_SECTION).locator("p").first)
 
+    def hierarchy_org_label_text(self) -> str:
+        """The tree panel's own header line (design: "XYZ — organisation")."""
+        return self.text_of(L.HIERARCHY_ORG_LABEL)
+
     def hierarchy_row(self, label: str):
         return self.page.locator(L.HIERARCHY_ROW).filter(has_text=label)
 
     def hierarchy_row_meta_text(self, label: str) -> str:
+        """Whole-row text — kept only for locating/debugging. Never assert
+        `==` or `in` against this for the meta value: use
+        hierarchy_row_meta_value() instead, which isolates the correct node."""
         return self.text_of(self.hierarchy_row(label))
+
+    def hierarchy_row_meta_value(self, label: str) -> str:
+        """The row's meta field, isolated to its own span and exactly as the
+        data model defines it (e.g. '2 subgroups', not '· 2 subgroups').
+
+        The row renders `<prefix><label span><meta span>`; the meta span is
+        always the last child. Its rendered text carries a leading '· '
+        separator baked in by the row's own layout, which is presentation
+        the row adds, not part of data-model.md's `meta` field — stripped
+        here so the caller compares the actual data value, not a rendering
+        artifact, with plain `==`.
+        """
+        raw = self.text_of(self.hierarchy_row(label).locator("span").last)
+        return raw.lstrip("·•-– ").strip()
 
     @allure.step("Select hierarchy node {label}")
     def select_hierarchy_node(self, label: str) -> None:
@@ -203,7 +224,21 @@ class LandingPage(BasePage):
         return self.count_of(self.page.locator(L.FOOTER).get_by_role("link", name=L.PRODUCT_MARK_NAME)) > 0
 
     def footer_copyright_text(self) -> str:
+        """Whole-footer text — kept for presence/absence checks that
+        legitimately span multiple elements. For asserting the exact
+        attribution string itself, use footer_attribution_text() instead:
+        this method's return value is a concatenation of several elements'
+        text and must never be compared with exact equality."""
         return self.text_of(self.page.locator(L.FOOTER))
+
+    def footer_attribution_text(self) -> str:
+        """The attribution element's own exact text (e.g. '©ACL Digital').
+
+        Isolates the single element carrying this string so the caller can
+        assert `==` rather than `in` — TR-010 states this as an exact literal,
+        not a fragment to search for inside a larger block of footer text.
+        """
+        return self.text_of(self.page.locator(L.FOOTER).get_by_text("ACL Digital", exact=False))
 
     @allure.step("Click Back to top in the footer")
     def click_back_to_top(self) -> None:
@@ -220,6 +255,27 @@ class LandingPage(BasePage):
         return self.is_visible(self.page.locator(L.FOOTER).get_by_role("link", name=L.BACK_TO_TOP_NAME))
 
     # -- page-wide queries --------------------------------------------------------
+
+    def computed_styles(self, selector: str) -> dict | None:
+        """Design-relevant computed styles for one element, or None if absent.
+
+        Returns data so the test owns the assertion (constitution VII). Used
+        by the TR-015 token audit, which compares what the build renders
+        against the Keel tokens the design source declares.
+        """
+        return self.page.evaluate(
+            """(sel) => {
+                 const e = document.querySelector(sel);
+                 if (!e) return null;
+                 const c = getComputedStyle(e);
+                 return {background: c.backgroundColor,
+                         borderTopWidth: c.borderTopWidth,
+                         borderBottomWidth: c.borderBottomWidth,
+                         radius: c.borderTopLeftRadius,
+                         shadow: c.boxShadow};
+               }""",
+            selector,
+        )
 
     def full_page_text(self) -> str:
         return self.page.locator("body").inner_text()

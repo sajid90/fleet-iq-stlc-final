@@ -4,6 +4,19 @@ STLC Phase 2, Phase 1 output. This is the **test data model**, not a product
 data model — every entity below exists to be asserted against, not to be
 created/mutated by the tests (this page has no write path at all).
 
+## Field: hierarchy panel org label (not part of HierarchyNode)
+
+Added 2026-09-22, closing a gap this data model had left undocumented since
+the original analysis. The tree panel renders one static header line above
+the node rows, confirmed verbatim in the design source: **`"XYZ — organisation"`**
+(with an em dash, "organisation" spelled out in full). It is not one of the
+five `HierarchyNode` fixture rows below — it belongs to the panel itself, not
+to any node — and is asserted separately (TC-032, TR-008).
+
+Its permanent-vs-placeholder status was the subject of `spec.md` §13b Q4;
+closed 2026-09-21 ("today's exact static values are what ships now"), so this
+line is tested as shipped content like every other hierarchy example value.
+
 ## Entity: HierarchyNode
 
 The static fixture the hierarchy explorer renders, confirmed verbatim in the

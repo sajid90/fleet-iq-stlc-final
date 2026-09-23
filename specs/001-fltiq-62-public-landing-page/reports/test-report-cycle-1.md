@@ -12,29 +12,36 @@
 | Metric | Value |
 |--------|-------|
 | Total test cases | 43 |
-| Executed (automated) | 41 |
-| Passed | 23 |
-| Failed | 18 |
+| Executed (automated) | 42 |
+| Passed | 19 |
+| Failed | 22 |
 | Blocked (not executed) | 1 (TC-043) |
-| Manual (not executed) | 1 (TC-035) |
+| Manual (not executed) | 0 -- TC-035 partially automated 2026-09-21 (see D9); pixel-fidelity half stays manual per plan.md A3 |
 | Skipped | 1 (TC-009 — no test account provisioned) |
-| Pass rate | **56%** (23 of 41 executed) |
-| Duration | 2m 16s (Chromium, serial) |
+| Pass rate | **45%** (19 of 42 executed) |
+| Duration | 2m 56s (Chromium, serial) |
 
 **Allure report**: `automation/reports/allure-report/index.html`
 **Raw results**: `automation/reports/allure-results/`
+**Jira-format defect records** (shareable, one per root cause):
+https://claude.ai/artifact/8uzunsp6Qf2CWozuaCyHWP
 
-18 failures resolve to **7 distinct defects**. All were verified as product
+22 failures resolve to **10 distinct defects**. All were verified as product
 behaviour rather than test defects: every assertion was checked against the
-approved requirement text, and D3 was additionally confirmed against a
-control experiment.
+approved requirement text, D3 was additionally confirmed against a
+control experiment, every copy string was compared against the design
+source itself rather than a transcription of it, D9 (styling) was found only
+after implementing the token-audit task (T038) that an earlier pass had
+incorrectly treated as unautomatable, and D10 was found only after tracing a
+requirement citation through to its actual resolution instead of trusting an
+older note that said it was still open.
 
 ## 2. Results by Priority
 
 | Priority | Total | Passed | Failed | Skipped | Pass rate |
 |----------|-------|--------|--------|---------|-----------|
 | P1 | 22 | 12 | 9 | 1 | 55% |
-| P2 | 14 | 8 | 6 | 0 | 57% |
+| P2 | 15 | 5 | 10 | 0 | 33% |
 | P3 | 5 | 2 | 3 | 0 | 40% |
 
 ## 3. Results by Scenario
@@ -45,7 +52,7 @@ control experiment.
 | S2 — Existing user routed past landing page | 4 | 3 | 0 (1 skipped) | Pass |
 | S3 — Hierarchy explorer, no backend call | 8 | 1 | 7 | **Fail** |
 | S4 — Accessibility & responsive baseline | 7 | 5 | 2 | **Fail** |
-| S5 — Content & structure match scope | 12 | 7 | 5 | **Fail** |
+| S5 — Content & structure match scope | 13 | 4 | 9 | **Fail** |
 
 ## 4. Defects — grouped by root cause
 
@@ -150,13 +157,14 @@ baseline (FLTIQ-53), not a nice-to-have.
 ### D5 — Marketing copy does not match the approved design
 
 **Severity: Low–Medium** | **Requirements: TR-006, TR-007, TR-009**
-**Fails: TC-029, TC-031, TC-033**
+**Fails: TC-028, TC-029, TC-030, TC-031, TC-033**
 
 Shipped text differs from the approved copy — mostly contractions where the
 design uses full forms, plus one substantive rewrite of the hero subhead.
 
 | Where | Approved | Shipped |
 |---|---|---|
+| **CTA label — all 6 instances** (TR-003/006/009) | "Create account" | "Create an account" |
 | Hero subhead (TR-006) | "One place to define device types, organise thousands of units into groups, and review a configuration change before it lands." | "FleetIQ gives you one place to define device types, organise thousands of units into groups, and push configuration changes you can review before they land." |
 | Hero stat 3 (TR-006) | "4 roles, from tenant owner to read-only viewer" | "4 roles, from Tenant Owner to read-only Viewer" |
 | Card 02 (TR-007) | "…nobody builds a tree the next person **cannot** read." | "…the next person **can't** read." |
@@ -164,9 +172,33 @@ design uses full forms, plus one substantive rewrite of the hero subhead.
 | Card 06 (TR-007) | "**It is not** a filter — **it is** the boundary." | "**It isn't** a filter — **it's** the boundary." |
 | Closing body (TR-009) | "**You will** be adding device types the same afternoon." | "**You'll** be adding device types the same afternoon." |
 
-Cards 01, 04 and 05 match exactly. Please confirm which side is authoritative:
+Cards 01, 04 and 05 match exactly. Verified by reading the design source directly and sweeping all 32 design-sourced strings against the build: 20 match exactly, 12 differ (case-sensitive comparison). The hierarchy panel label (`XYZ` vs `XYZ — organisation`) also differs and **is** now raised, as its own defect below (D10) — see the correction there for why it was initially left out. Please confirm which side is authoritative for the seven strings above:
 if the shipped wording is intentional, the design source and `spec.md` should
 be updated instead of the code.
+
+---
+
+### D10 — Hierarchy panel header text truncated, missing "— organisation"
+
+**Severity: Medium** | **Requirement: TR-008 (P1)** | **Fails: TC-032**
+
+The tree panel's own header line, above the node rows, renders `"XYZ"` where
+the design specifies `"XYZ — organisation"` verbatim — the em dash and the
+word "organisation" are both missing.
+
+```
+TC-032  AssertionError: assert 'XYZ' == 'XYZ — organisation'
+```
+
+**Correction, stated plainly.** This report initially excluded this string
+from D5, citing `spec.md` §13b Q4 as still open. That citation was stale:
+Q4 closed on 2026-09-21 ("today's exact static values are what ships now"),
+but nothing acted on that closure for this specific line, and `spec.md` §11
+was never updated to say so — so it stayed both untested and mis-cited as
+open for a full day. Caught only by a requester screenshot comparison
+against the design, not by this report's own review. `spec.md` §11 now
+carries a dated correction note, and TR-008 has been amended to name this
+line explicitly.
 
 ---
 
@@ -230,13 +262,81 @@ server-side, a client-side loader may never be observable at all — in which
 case TR-020 needs revisiting with QA rather than a code change. Happy to pair
 on this one before any work starts.
 
+### D9 — Design-system tokens applied to the wrong surfaces
+
+**Severity: High** | **Requirement: TR-015 (P2)** | **Fails: TC-035**
+
+Five of eight checked surfaces render the wrong Keel token, and capability
+cards, the hierarchy panel and the header header/border treatment are missing
+entirely. This was found only after fixing a gap in the suite itself, not
+from a code change -- see the note at the end of this entry.
+
+| Surface | Design token | Design value | Build renders |
+| --- | --- | --- | --- |
+| Capabilities grid | *(no background)* | transparent | `#E2E5EB` -- **`--keel-border` painted as a background fill** |
+| Capability card | `--keel-surface` | `#FFFFFF` | `#F7F8FA` (`--keel-bg`, the *page* background) |
+| Hierarchy panel | `--keel-surface` | `#FFFFFF` | transparent (no background at all) |
+| Closing section | `--keel-deck-navy` | `#000D35` | `#141922` (`--keel-n-900`, a generic dark neutral) |
+| Footer | `--keel-surface` | `#FFFFFF` | `#F7F8FA` (`--keel-bg`) |
+
+Capability cards and the hierarchy panel are also missing the 1px
+`--keel-border` border, `--keel-radius-lg` corner radius and `--keel-shadow-sm`
+drop shadow the design gives every raised surface; the header is missing its
+1px bottom border. Header, stats section and page background are correct.
+
+```
+TC-035  AssertionError: design-system token application defects:
+        - section[aria-label="Capabilities"] > div: background is rgb(226, 229, 235),
+          design declares no background declared in the design (rgba(0, 0, 0, 0))
+        - section[aria-label="Capabilities"] > div > div: background is
+          rgb(247, 248, 250), design declares --keel-surface (rgb(255, 255, 255))
+        - section[aria-label="Hierarchy example"] pre: background is
+          rgba(0, 0, 0, 0), design declares --keel-surface (rgb(255, 255, 255))
+        - section[aria-label="Get started"]: background is rgb(20, 25, 34),
+          design declares --keel-deck-navy (rgb(0, 13, 53))
+        - footer: background is rgb(247, 248, 250), design declares
+          --keel-surface (rgb(255, 255, 255))
+        - section[aria-label="Capabilities"] > div > div: no border, design
+          declares 1px solid --keel-border
+        - section[aria-label="Capabilities"] > div > div: no border-radius,
+          design declares --keel-radius-lg
+        - section[aria-label="Capabilities"] > div > div: no box-shadow,
+          design declares --keel-shadow-sm
+        - section[aria-label="Hierarchy example"] pre: no border, design
+          declares 1px solid --keel-border
+        - section[aria-label="Hierarchy example"] pre: no border-radius,
+          design declares --keel-radius-lg
+        - section[aria-label="Hierarchy example"] pre: no box-shadow, design
+          declares --keel-shadow-sm
+```
+
+**How this was found, stated plainly.** TR-015/TC-035 was originally marked
+`automatable: false` and left fully manual, on the reasoning that pixel-level
+visual fidelity isn't a boolean a single assertion can cover. `tasks.md`'s own
+T038 already called for automating the deterministic half -- a token/component
+usage audit -- but that task was skipped, and no styling property was checked
+by any test in this suite for the entire first cycle. A requester screenshot
+comparison against the design caught a visibly grey block in the capabilities
+section that should be a card grid on white; that specific instance led to
+implementing the audit T038 always called for, which surfaced the other four.
+The lesson generalises: earlier gaps in this cycle (the missing "F" glyph, the
+"Create an account" vs "Create account" label) were also found by lenient test
+coverage rather than no coverage; this one had no coverage at all.
+
+Since these are shared-surface tokens (backgrounds, borders, radius, shadow),
+please check whether the mistake sits in this page's own styles or in the
+Keel component library (FLTIQ-60) -- if the latter, every screen in the epic
+inherits it.
+
+---
+
 ## 5. Not executed
 
 | Case | Why |
 |------|-----|
 | TC-009 | **Skipped** — no authenticated test account provisioned (`TEST_USERNAME`/`TEST_PASSWORD` unset). The authenticated-redirect gate (TR-002, **P1**) is therefore **unverified**. Please provision a least-privileged QA account so this can run. |
 | TC-043 | **Blocked** — the explorer's fallback when its client-side script fails to load is unspecified by any source (spec.md §13b Q3). Needs a product decision before a test can be written. |
-| TC-035 | **Manual** — design-system token and visual-fidelity review; not machine-verifiable in a single assertion. |
+| TC-035 | **Partially automated** — the token-application audit now runs (see D9) and fails; the pixel-fidelity/visual-regression half stays manual per plan.md A3. |
 
 ## 6. What passed
 
@@ -253,10 +353,11 @@ hierarchy section's own heading and intro paragraph match the design verbatim.
 **NO-GO for release.**
 
 Blocking items: **D1** (a P1 requirement is essentially unimplemented), **D4**
-(contractual accessibility baseline), and **D2**. TR-002 also remains
-unverified for want of a test account.
+(contractual accessibility baseline), **D2**, and **D9** (widespread token
+misapplication, epic-scope risk if it sits in FLTIQ-60 rather than this page).
+TR-002 also remains unverified for want of a test account.
 
-Suggested order: D1 → D4 → D2 → D3 → D5/D6/D7.
+Suggested order: D1 → D4 → D9 → D2 → D3 → D8 → D5 → D10 → D6 → D7.
 
 Re-run after fixes with `.specify/scripts/bash/run-tests.sh`. The suite is
 deterministic — it reproduces the same 18 failures on Chromium, Firefox and

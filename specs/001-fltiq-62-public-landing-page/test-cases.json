@@ -1,7 +1,7 @@
 {
   "ticket": "FLTIQ-62",
   "feature": "Build the public landing page",
-  "generated": "2026-09-21T20:45:00",
+  "generated": "2026-09-22T02:15:00",
   "test_cases": [
     {
       "id": "TC-001",
@@ -494,7 +494,7 @@
       "automatable": true,
       "automation_status": "Automated",
       "test_file": "automation/tests/ui/test_landing.py::test_tc017_meta_distinct_from_devices",
-      "notes": "The specific regression case data-model.md flags -- for Floor 1/Floor 2/Unassigned the two fields happen to read alike, but must not be asserted as the same field generally"
+      "notes": "The specific regression case data-model.md flags -- for Floor 1/Floor 2/Unassigned the two fields happen to read alike, but must not be asserted as the same field generally Hardened 2026-09-22 (constitution VII.a): assertion changed from a substring check against the whole tree row's concatenated text to an exact `==` comparison against the isolated meta span's own text, so a wrong or partially-correct value can no longer pass. Coverage of existing requirement text, not a new requirement."
     },
     {
       "id": "TC-018",
@@ -814,15 +814,15 @@
       "steps": [
         {
           "action": "Inspect the header's control group",
-          "expected": "\"Sign in\" appears before \"Create account\" in DOM/visual order"
+          "expected": "The controls read exactly \"Sign in\" then \"Create account\", in that order"
         }
       ],
-      "expected_result": "The header's CTA order matches the design source exactly",
+      "expected_result": "The header's CTA labels and their order match the design source exactly, case included",
       "test_data": "none",
       "automatable": true,
       "automation_status": "Automated",
       "test_file": "automation/tests/ui/test_landing.py::test_tc028_header_cta_order",
-      "notes": "Order is the opposite of the hero and closing section (TC-030, TC-033) -- verified per-section, never assumed consistent"
+      "notes": "Order is the opposite of the hero and closing section (TC-030, TC-033) -- verified per-section, never assumed consistent Strengthened 2026-09-21: the CTA check now compares the labels exactly and in order (case-sensitive) instead of matching a lowercased substring, after a design cross-check found the build ships \"Create an account\" where the design says \"Create account\". Coverage of TR-003's existing text, not a new requirement."
     },
     {
       "id": "TC-029",
@@ -878,15 +878,15 @@
       "steps": [
         {
           "action": "Inspect the hero's CTA group",
-          "expected": "\"Create account\" appears before \"Sign in\" in DOM/visual order"
+          "expected": "The CTAs read exactly \"Create account\" then \"Sign in\", in that order"
         }
       ],
-      "expected_result": "The hero's CTA order matches the design source exactly -- the reverse of the header",
+      "expected_result": "The hero's CTA labels and their order match the design source exactly -- the reverse order of the header",
       "test_data": "none",
       "automatable": true,
       "automation_status": "Automated",
       "test_file": "automation/tests/ui/test_landing.py::test_tc030_hero_cta_order",
-      "notes": ""
+      "notes": " Strengthened 2026-09-21: the CTA check now compares the labels exactly and in order (case-sensitive) instead of matching a lowercased substring, after a design cross-check found the build ships \"Create an account\" where the design says \"Create account\". Coverage of TR-006's existing text, not a new requirement."
     },
     {
       "id": "TC-031",
@@ -923,7 +923,8 @@
       "title": "Hierarchy section renders the exact heading and intro paragraph",
       "scenario": "S5",
       "requirements": [
-        "TR-019"
+        "TR-019",
+        "TR-008"
       ],
       "acceptance_criteria": [],
       "type": "UI",
@@ -939,14 +940,18 @@
         {
           "action": "Inspect the intro paragraph",
           "expected": "Reads exactly \"Devices inherit configuration from the group they sit in, so a change to a floor reaches forty units without touching one of them individually. Unassigned devices stay visible until someone places them.\""
+        },
+        {
+          "action": "Inspect the hierarchy panel's own header line, above the node rows",
+          "expected": "Reads exactly \"XYZ — organisation\""
         }
       ],
-      "expected_result": "The hierarchy section's heading and intro copy match the approved design verbatim",
+      "expected_result": "The hierarchy section's heading and intro copy match the approved design verbatim, and the tree panel's own header line reads \"XYZ — organisation\" exactly",
       "test_data": "none",
       "automatable": true,
       "automation_status": "Automated",
       "test_file": "automation/tests/ui/test_landing.py::test_tc032_hierarchy_exact_copy",
-      "notes": "This heading/body was found during a requester screenshot cross-check, not on the first analysis pass (spec.md TR-019)"
+      "notes": "This heading/body was found during a requester screenshot cross-check, not on the first analysis pass (spec.md TR-019) Extended 2026-09-22 to add the panel header line (TR-008), after a requester screenshot comparison caught that spec.md's own §13b Q4 closure (2026-09-21) had never been acted on for this element -- it was still untested and mis-cited in §11 as an open question a full day after closing. See D10 in reports/test-report-cycle-1.md and data-model.md's new field entry."
     },
     {
       "id": "TC-033",
@@ -968,15 +973,15 @@
         },
         {
           "action": "Inspect the closing section's CTA group",
-          "expected": "\"Create account\" appears before \"Sign in\", the same order as the hero and opposite the header"
+          "expected": "The CTAs read exactly \"Create account\" then \"Sign in\", the same order as the hero and opposite the header"
         }
       ],
-      "expected_result": "The closing section's copy and CTA order match the approved design verbatim",
+      "expected_result": "The closing section's copy and CTA labels/order match the design source exactly",
       "test_data": "none",
       "automatable": true,
       "automation_status": "Automated",
       "test_file": "automation/tests/ui/test_landing.py::test_tc033_closing_exact_copy_and_order",
-      "notes": ""
+      "notes": " Strengthened 2026-09-21: the CTA check now compares the labels exactly and in order (case-sensitive) instead of matching a lowercased substring, after a design cross-check found the build ships \"Create an account\" where the design says \"Create account\". Coverage of TR-009's existing text, not a new requirement."
     },
     {
       "id": "TC-034",
@@ -1006,7 +1011,7 @@
       "automatable": true,
       "automation_status": "Automated",
       "test_file": "automation/tests/ui/test_landing.py::test_tc034_footer_elements_present",
-      "notes": "Presence only -- behaviour of the mark (TC-008) and the link (TC-006) are covered separately Extended 2026-09-21 to assert the square icon contains \"F\": TR-010 states the mark is a square icon *containing \"F\"* beside the wordmark, and no case asserted the glyph. Coverage of existing text, not a new requirement."
+      "notes": "Presence only -- behaviour of the mark (TC-008) and the link (TC-006) are covered separately Extended 2026-09-21 to assert the square icon contains \"F\": TR-010 states the mark is a square icon *containing \"F\"* beside the wordmark, and no case asserted the glyph. Coverage of existing text, not a new requirement. Hardened 2026-09-22 (constitution VII.a): assertion changed from a substring check against the whole footer's concatenated text to an exact `==` comparison against the isolated mark/attribution element's own text, so a wrong or partially-correct value can no longer pass. Coverage of existing requirement text, not a new requirement."
     },
     {
       "id": "TC-035",
@@ -1026,20 +1031,24 @@
       ],
       "steps": [
         {
-          "action": "Perform a component-usage/token audit against the Keel design system (spec.md §11's proposed resolution)",
-          "expected": "No page-specific styling (inline colour/spacing literals) is found"
+          "action": "Compare each surface's rendered background against the Keel token the design source declares for it (body, header, stats section, capabilities grid, capability card, hierarchy panel, closing section, footer)",
+          "expected": "Every surface resolves to its declared token: --keel-bg #F7F8FA for the page, --keel-surface #FFFFFF for header/stats/cards/panel/footer, --keel-deck-navy #000D35 for the closing section, and no background on the capabilities grid"
+        },
+        {
+          "action": "Check that capability cards and the hierarchy panel carry a 1px --keel-border border, --keel-radius-lg radius and --keel-shadow-sm shadow, and that the header carries a bottom border",
+          "expected": "All present"
         },
         {
           "action": "Compare the rendered page against the approved design in a manual visual-regression review (plan.md A3)",
           "expected": "Visual fidelity matches the design system's tokens and components"
         }
       ],
-      "expected_result": "The page is built entirely on shared design-system tokens/components, with no page-specific styling",
+      "expected_result": "The page is built entirely on shared design-system tokens/components, with each token applied to the property the design declares it for, and no page-specific styling",
       "test_data": "none",
-      "automatable": false,
-      "automation_status": "Manual",
-      "test_file": "",
-      "notes": "Not independently machine-verifiable via a single Playwright assertion (spec.md §11); a partial automated token/component audit supplements the manual visual-regression review (plan.md A3)"
+      "automatable": true,
+      "automation_status": "Automated",
+      "test_file": "automation/tests/ui/test_landing.py::test_tc035_design_system_token_application",
+      "notes": "Partially automated 2026-09-21 (task T038): the token-application audit is a deterministic computed-style comparison against the tokens the design source declares, so it is automatable after all -- the earlier `automatable: false` treated a bookkeeping flag as a technical limit and left visual verification with no executed coverage at all. A requester screenshot comparison found the capabilities grid rendering --keel-border as a background. The manual visual-regression half (pixel fidelity, spacing, typography rendering) remains manual per plan.md A3. All checks are collected and reported together because these defects cluster."
     },
     {
       "id": "TC-036",

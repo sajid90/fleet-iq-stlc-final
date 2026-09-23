@@ -20,6 +20,7 @@ import pytest
 from axe_playwright_python.sync_playwright import Axe
 from playwright.sync_api import expect
 
+from automation.locators.landing_locators import LandingLocators as L
 from automation.pages.landing_page import LandingPage
 from automation.utils.config import Settings
 from automation.utils.data_loader import load_json
@@ -387,11 +388,14 @@ def test_tc016_no_api_call_during_hierarchy_interaction(landing_page: LandingPag
 @pytest.mark.p1
 def test_tc017_meta_distinct_from_devices(landing_page: LandingPage, nodes: dict):
     landing_page.open()
-    assert nodes["a"]["meta"] in landing_page.hierarchy_row_meta_text("Building A")
+    # Exact match on the isolated meta node, not a substring of the whole
+    # row's text (constitution VII.a) — the row's prefix/label text must not
+    # be able to mask a wrong meta value.
+    assert landing_page.hierarchy_row_meta_value("Building A") == nodes["a"]["meta"]
     landing_page.select_hierarchy_node("Building A")
     assert landing_page.detail_panel_devices() == str(nodes["a"]["devices"])
 
-    assert nodes["b"]["meta"] in landing_page.hierarchy_row_meta_text("Building B")
+    assert landing_page.hierarchy_row_meta_value("Building B") == nodes["b"]["meta"]
     landing_page.select_hierarchy_node("Building B")
     assert landing_page.detail_panel_devices() == str(nodes["b"]["devices"])
 
@@ -608,10 +612,13 @@ def test_tc041_360px_combined_with_200_percent_zoom(landing_page: LandingPage):
 @pytest.mark.p2
 def test_tc028_header_cta_order(landing_page: LandingPage):
     landing_page.open()
-    order = landing_page.header_cta_order()
-    sign_in_idx = next(i for i, t in enumerate(order) if "sign in" in t.lower())
-    create_idx = next(i for i, t in enumerate(order) if "create" in t.lower())
-    assert sign_in_idx < create_idx, f"expected Sign in before Create account, got {order}"
+    # Exact, case-sensitive and ordered: TR-003 fixes both the labels and
+    # their order, so one comparison covers both. The product mark is
+    # excluded — it is a link, but not one of the two controls.
+    ctas = [t for t in landing_page.header_cta_order() if t != "FleetIQ"]
+    assert ctas == ["Sign in", "Create account"], (
+        f"header controls must read exactly ['Sign in', 'Create account'] in that order, got {ctas}"
+    )
 
 
 @allure.epic("FleetIQ")
@@ -646,10 +653,11 @@ def test_tc029_hero_exact_copy(landing_page: LandingPage):
 @pytest.mark.p2
 def test_tc030_hero_cta_order(landing_page: LandingPage):
     landing_page.open()
-    order = landing_page.hero_cta_order()
-    create_idx = next(i for i, t in enumerate(order) if "create" in t.lower())
-    sign_in_idx = next(i for i, t in enumerate(order) if "sign in" in t.lower())
-    assert create_idx < sign_in_idx, f"expected Create account before Sign in, got {order}"
+    # Exact, case-sensitive and ordered — TR-006 fixes both (see TC-028).
+    ctas = landing_page.hero_cta_order()
+    assert ctas == ["Create account", "Sign in"], (
+        f"hero CTAs must read exactly ['Create account', 'Sign in'] in that order, got {ctas}"
+    )
 
 
 @allure.epic("FleetIQ")
@@ -699,6 +707,10 @@ def test_tc032_hierarchy_exact_copy(landing_page: LandingPage):
         "reaches forty units without touching one of them individually. Unassigned devices "
         "stay visible until someone places them."
     )
+    # TR-008/data-model.md: the tree panel's own header line — closed by
+    # §13b Q4 (2026-09-21) as one of "today's exact static values" the
+    # suite tests as shipped, not an open placeholder question.
+    assert landing_page.hierarchy_org_label_text() == "XYZ — organisation"
 
 
 @allure.epic("FleetIQ")
@@ -716,10 +728,11 @@ def test_tc033_closing_exact_copy_and_order(landing_page: LandingPage):
         "Sign up, verify your email, name your organisation. You will be adding device "
         "types the same afternoon."
     )
-    order = landing_page.closing_cta_order()
-    create_idx = next(i for i, t in enumerate(order) if "create" in t.lower())
-    sign_in_idx = next(i for i, t in enumerate(order) if "sign in" in t.lower())
-    assert create_idx < sign_in_idx, f"expected Create account before Sign in, got {order}"
+    # Exact, case-sensitive and ordered — TR-009 fixes both (see TC-028).
+    ctas = landing_page.closing_cta_order()
+    assert ctas == ["Create account", "Sign in"], (
+        f"closing CTAs must read exactly ['Create account', 'Sign in'] in that order, got {ctas}"
+    )
 
 
 @allure.epic("FleetIQ")
@@ -732,14 +745,79 @@ def test_tc033_closing_exact_copy_and_order(landing_page: LandingPage):
 def test_tc034_footer_elements_present(landing_page: LandingPage):
     landing_page.open()
     landing_page.scroll_to_bottom()
-    assert "FleetIQ" in landing_page.footer_mark_text()
+    # Exact match throughout (constitution VII.a) — "FleetIQ"/"©ACL Digital"
+    # are literal strings TR-010 names, not fragments to search for.
+    assert landing_page.footer_mark_text() == "FleetIQ"
     # TR-010: "the same square 'F' icon + 'FleetIQ' wordmark as the header"
     assert landing_page.footer_mark_icon_text() == "F", (
         "the footer mark's square icon does not contain 'F' "
         f"(got {landing_page.footer_mark_icon_text()!r})"
     )
-    assert "ACL Digital" in landing_page.footer_copyright_text()
+    assert landing_page.footer_attribution_text() == "©ACL Digital"
     assert landing_page.is_back_to_top_visible()
+
+
+@allure.epic("FleetIQ")
+@allure.feature("Public landing page")
+@allure.story("Page content and structure match the approved scope")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.title("TC-035: Every visual element resolves to a shared design-system token or component")
+@allure.testcase("TC-035")
+@pytest.mark.p2
+def test_tc035_design_system_token_application(landing_page: LandingPage):
+    """Automated half of TC-035 (task T038) — the deterministic token audit.
+
+    The manual visual-regression half stays in plan.md A3. This compares what
+    the build renders against the Keel tokens the design source declares for
+    each surface, so a token applied to the wrong property is caught. Every
+    check is collected and reported together: these defects cluster, and
+    failing on the first would hide the rest.
+    """
+    landing_page.open()
+    BG, SURFACE, BORDER, NAVY = (
+        "rgb(247, 248, 250)",  # --keel-bg      #F7F8FA
+        "rgb(255, 255, 255)",  # --keel-surface #FFFFFF
+        "rgb(226, 229, 235)",  # --keel-border  #E2E5EB
+        "rgb(0, 13, 53)",      # --keel-deck-navy #000D35
+    )
+    expected_backgrounds = [
+        ("body", BG, "--keel-bg"),
+        (L.HEADER, SURFACE, "--keel-surface"),
+        ('section[aria-label="Platform overview"]', SURFACE, "--keel-surface"),
+        (L.CAPABILITIES_GRID, "rgba(0, 0, 0, 0)", "no background declared in the design"),
+        (L.CAPABILITY_CARD, SURFACE, "--keel-surface"),
+        (L.HIERARCHY_PANEL, SURFACE, "--keel-surface"),
+        (L.CLOSING_SECTION, NAVY, "--keel-deck-navy"),
+        (L.FOOTER, SURFACE, "--keel-surface"),
+    ]
+    problems: list[str] = []
+    for selector, expected, token in expected_backgrounds:
+        styles = landing_page.computed_styles(selector)
+        if styles is None:
+            problems.append(f"{selector}: element not found")
+            continue
+        if styles["background"] != expected:
+            problems.append(
+                f"{selector}: background is {styles['background']}, "
+                f"design declares {token} ({expected})"
+            )
+    # The design gives cards and the hierarchy panel a 1px border, a radius
+    # and a shadow; the header a bottom border.
+    for selector in (L.CAPABILITY_CARD, L.HIERARCHY_PANEL):
+        styles = landing_page.computed_styles(selector)
+        if styles is None:
+            continue
+        if styles["borderTopWidth"] == "0px":
+            problems.append(f"{selector}: no border, design declares 1px solid --keel-border")
+        if styles["radius"] == "0px":
+            problems.append(f"{selector}: no border-radius, design declares --keel-radius-lg")
+        if styles["shadow"] == "none":
+            problems.append(f"{selector}: no box-shadow, design declares --keel-shadow-sm")
+    header = landing_page.computed_styles(L.HEADER)
+    if header and header["borderBottomWidth"] == "0px":
+        problems.append(f"{L.HEADER}: no bottom border, design declares 1px solid --keel-border")
+
+    assert not problems, "design-system token application defects:\n  - " + "\n  - ".join(problems)
 
 
 @allure.epic("FleetIQ")

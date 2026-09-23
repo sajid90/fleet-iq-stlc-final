@@ -40,7 +40,9 @@ class LandingLocators:
     CREATE_ACCOUNT_NAME = re.compile(r"create.*account", re.IGNORECASE)
 
     # -- capability cards ------------------------------------------------------
+    CAPABILITIES_GRID = 'section[aria-label="Capabilities"] > div'
     CAPABILITY_CARD = 'section[aria-label="Capabilities"] > div > div'
+    HIERARCHY_PANEL = 'section[aria-label="Hierarchy example"] pre'
 
     # -- hierarchy explorer ----------------------------------------------------
     # The real build renders the tree as static `<pre>` text (no <button>,
@@ -51,6 +53,10 @@ class LandingLocators:
     # outstanding.
     HIERARCHY_TREE = f"{HIERARCHY_SECTION} pre"
     HIERARCHY_ROW = f"{HIERARCHY_SECTION} pre > div"
+    # The tree's own header line (design: "XYZ — organisation"), the first
+    # child of the <pre> block and structurally distinct from a node row —
+    # it carries no node label and is never a click target.
+    HIERARCHY_ORG_LABEL = f"{HIERARCHY_SECTION} pre > div:first-child"
     # Detail panel fields the design specifies but the current build has not
     # implemented (no detail panel exists in the DOM at all). Referenced via
     # the data-testid names already requested in research.md R6 so the
