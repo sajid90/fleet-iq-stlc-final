@@ -182,6 +182,20 @@ development rather than writing a brittle selector.
 only. `time.sleep` is banned. Timeouts come from settings, never hard-coded in
 a test.
 
+**Static text — exact match, never semantic (constitution VII.a,
+NON-NEGOTIABLE)**. Any button label, link text, heading or static copy an
+approved source states as a literal string is asserted with `==` against
+that element's own isolated text — never `in`, `.lower()`, a regex, or
+`exact=False` used to judge correctness. Locating an element to click or
+navigate may use a tolerant match (that test is about the destination, not
+the label); asserting what the element says is always exact, on a separate
+line, against the source verbatim. If a page-object getter returns a
+multi-element block (e.g. a whole footer), it is for locating/debugging
+only — add a getter that isolates the one element carrying the literal
+string before writing an exact-match assertion against it. Confirm the
+literal string against the design source directly when `spec.md` and the
+design could disagree, not against `spec.md`'s transcription alone.
+
 **Independence** — each test sets up and tears down its own state, and passes
 in any order and in parallel. No shared mutable state between tests.
 
@@ -318,6 +332,10 @@ Report:
 
 - [ ] Every task in scope completed and marked `[X]` in `tasks.md`
 - [ ] Tests follow the POM boundary, selector priority and naming rules
+- [ ] Every assertion of a static label, link, heading or static copy uses
+      exact `==` on the correct element's isolated text — no `in`,
+      `.lower()`, or `exact=False` standing in for an exact-match assertion
+      (constitution VII.a)
 - [ ] Every automated test carries its Allure metadata and `TC-xxx` id
 - [ ] The suite passes, in parallel, with no order dependence — or failures are reported as findings
 - [ ] `test-cases.json` updated and `test-cases.xlsx` regenerated

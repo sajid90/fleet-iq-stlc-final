@@ -121,6 +121,23 @@ points that also apply to any code in `automation/`:
   and return page objects or plain data; tests hold every assertion.
 - **Selector priority**: `get_by_role` → `get_by_label` → `data-testid` → CSS.
   XPath requires a comment justifying it.
+- **Static UI text is asserted exactly, never semantically** (constitution
+  VII.a): every button label, link text, heading and static copy an approved
+  source states literally is checked with `==` against the correct element's
+  own isolated text — never `in`, `.lower()`, or `exact=False` used to decide
+  whether the text is *right*. Tolerant matching is fine for *locating* an
+  element to click or navigate; it never substitutes for the exact-match
+  assertion of what that element says. Verify against the design source
+  itself, not `spec.md`'s transcription of it, when the two could disagree.
+- **Closing an item propagates everywhere it's cited, not just its own
+  section** (constitution XIII Step 4a): resolving a clarification question,
+  a defect, or a requirement's status means searching every artifact in
+  `FEATURE_DIR` for that item's identifier and re-verifying each hit —
+  never trusting a prose citation's own wording ("still-open", "pending",
+  "excluded") about another section's current state. FLTIQ-62's own
+  incident: `spec.md` §11 called a clarification question "still-open" a
+  full day after it had closed, and that stale sentence was cited — twice,
+  in two artifacts — to exclude a real defect from a report.
 - **Determinism only**: Playwright auto-waiting / web-first assertions;
   `time.sleep` is banned; every test creates its own state, passes in any
   order and under parallel execution (`pytest-xdist`).

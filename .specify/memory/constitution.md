@@ -198,6 +198,42 @@ Tests read as the scenario they verify and hold every assertion. Locators live
 in the locator layer, never inline in test bodies. Selector priority is
 role → label → `data-testid` → CSS; XPath requires a comment justifying it.
 
+**VII.a — Static UI text is asserted exactly, never semantically
+(NON-NEGOTIABLE).** Every button label, link text, heading, and static body
+copy that an approved source (design, `spec.md`, PRD) states as a literal
+string is verified with an exact, case-sensitive string comparison —
+`==` against the full, isolated text of the correct element. Never a
+substring check (`in`), a lowercased comparison, a regex, or `exact=False`
+used to decide whether the text is *correct*. A tolerant match answers "is
+something there," not "is it right," and three separate defects on FLTIQ-62
+shipped as passing tests because of exactly this: `"Create account"` shipped
+as `"Create an account"` behind a lowercased substring check; `"tenant
+owner"` shipped as `"Tenant Owner"` behind the same; a footer attribution
+string was checked with `"ACL Digital" in <whole footer's text>`, which
+would have passed even if the actual text were wrong, malformed, or
+duplicated elsewhere in that block.
+
+This does not ban tolerant matching outright — it separates two different
+jobs that a semantic match quietly conflates:
+
+- **Locating** an element to interact with it (click, navigate) may use a
+  tolerant locator (`get_by_role` with a partial or case-insensitive name,
+  `get_by_text(..., exact=False)`) when the test's purpose is confirming
+  *where the control leads*, not *what it says*. `page_object.method()` may
+  return the element via a tolerant locator.
+- **Asserting** what that element's text actually is is a separate step,
+  using the element's own isolated, full text with `==`. If a whole block of
+  text contains other elements' content too (e.g. a footer with three
+  children), isolate the one element that carries the literal string before
+  comparing — never assert against the concatenated block with `in`.
+
+A page object method that returns a composite, multi-element string (for
+locating or debugging) must say so in its docstring and must not be used for
+an exact-match assertion; add a dedicated method that isolates the single
+element instead. Every literal string asserted this way is verified against
+the approved source directly — the design file itself, not a transcription
+of it in `spec.md`, when the two could disagree (constitution I).
+
 ### VIII. Manual and Automated Testing Are Both First-Class
 
 Automation is a means, not the goal. Exploratory testing, visual judgement, and
@@ -312,6 +348,28 @@ whether each is now stale, still valid, or unaffected. "Nothing downstream
 exists yet" is itself a valid, statable finding from that check — not a step
 to skip because the answer seems obvious.
 
+**Step 4a — Prose citations of the changed item's status are found and
+fixed too, not just structured references (NON-NEGOTIABLE).** Resolving a
+clarification question, closing an open item, or changing a requirement's
+class does not only create downstream `TR-xxx`/`TC-xxx` links to check — it
+can leave *other sections describing that same item's old status in prose*
+uncorrected, and `/speckit-analyze`'s structured-id check does not read
+prose for this. Before reporting the resolution complete, search every
+artifact in `FEATURE_DIR` (and the constitution and skills themselves, when
+one of them is what changed) for the item's own identifier (its `§`
+section/question number, `TR-xxx`, `EC-xxx`, `CF-xxx`, defect id) and read
+each hit — not just the section where it was first raised — to confirm it
+still states the *current* resolution, not the state before this edit. A
+citation that itself asserts a status ("still-open", "unanswered",
+"pending", "blocked", "excluded") is exactly the failure mode this step
+exists to catch: it must be re-verified against the section it names, never
+trusted on its own wording, before it is used to justify a decision (such as
+excluding something from a defect report). FLTIQ-62's own history is the
+named case: `spec.md` §11 called §13b Q4 "still-open" a full day after §13b
+itself recorded Q4 as closed, and that stale sentence was then cited to
+exclude a real defect from a report — twice, in two different artifacts —
+before a direct question caught it.
+
 **Step 5 — Downstream updates are targeted, not wholesale.** A changed
 `TR-xxx` requires updating only the `TC-xxx` / tasks / tests that Step 4
 actually found referencing it — never a full re-run of the phase that
@@ -332,10 +390,33 @@ compliance. Where a deviation is genuinely warranted, it is recorded in the
 plan's Complexity Tracking table with the simpler alternative that was rejected
 and why. Undocumented deviation is not permitted.
 
-**Version**: 1.2.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-21
+**Version**: 1.4.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-22
 
 ### Amendment history
 
+- **1.4.0** (2026-09-22, MINOR): Added principle XIII Step 4a, closing a gap
+  in Step 4's own blast-radius check: it scoped "downstream" to structured
+  `TR-xxx`/`TC-xxx`/task/test links, never to prose elsewhere that describes
+  the changed item's status. On FLTIQ-62, `spec.md` §11 called §13b Q4
+  "still-open" a full day after §13b itself recorded Q4 as closed; that
+  stale sentence was then cited — unverified against §13b — to exclude a
+  real defect from a report, in two separate artifacts, before a direct
+  question caught it. Step 4a requires searching every artifact for the
+  changed item's own identifier and re-verifying each hit against the
+  current resolution, and names "a citation asserting a status" as the
+  specific pattern to distrust on its own wording.
+
+- **1.3.0** (2026-09-22, MINOR): Added principle VII.a, Static UI text is
+  asserted exactly, never semantically. Prompted by three FLTIQ-62 findings
+  in one cycle: a CTA label ("Create account" shipped as "Create an
+  account"), a hero statistic's case ("tenant owner" shipped as "Tenant
+  Owner"), and a footer attribution string, all hidden from the suite by
+  substring/lowercased assertions that answered "is something there"
+  instead of "is it right." Separates tolerant *locating* (permitted, when
+  the point is confirming a destination) from exact *asserting* (mandatory
+  `==` on the correct element's isolated text, for every literal string an
+  approved source states), and requires verifying against the design source
+  directly rather than a transcription of it when the two could disagree.
 - **1.2.0** (2026-09-21, MINOR): Strengthened principle I (the bidirectional
   `Test Case -> Requirement -> Source` chain, made explicit; an incomplete
   chain is rejected at creation, not fixed later; never invent or borrow a

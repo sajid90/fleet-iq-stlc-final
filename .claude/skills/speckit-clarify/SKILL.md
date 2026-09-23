@@ -348,6 +348,17 @@ standing on a spec that just had its scope changed underneath it.
 - Respect early termination ("stop", "done", "proceed").
 - If the quota is reached with high-impact categories unresolved, flag them
   explicitly under **Deferred** with the risk each one carries.
+- **Closing a question is not just editing its own §13 entry (constitution
+  XIII Step 4a).** Before reporting the resolution complete, search the
+  whole feature directory — every artifact, not just `spec.md` — for this
+  question's own identifier (its `§13a`/`§13b` number, or any `EC-xxx`/
+  `CF-xxx`/`RA-xxx` it resolves) and read every hit. A prose sentence
+  elsewhere that characterizes this question as "open", "unanswered", or
+  "pending" is exactly the failure this step catches: fix it there too, not
+  only in the Clarifications section and the §13 table. `spec.md` §11's own
+  UI-element enumeration is a known place this class of citation lives —
+  check it by name, not only by grep, since its wording may paraphrase the
+  question rather than quote its number verbatim.
 
 Context for prioritization: $ARGUMENTS
 
