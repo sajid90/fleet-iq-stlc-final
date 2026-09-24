@@ -12,7 +12,7 @@ import pytest
 
 from automation.utils.base_page import BasePage
 from automation.utils.config import get_settings
-from automation.utils.data_loader import get_user
+from automation.utils.data_loader import load_json
 
 
 @pytest.mark.smoke
@@ -21,9 +21,11 @@ def test_framework_wiring() -> None:
     assert settings.browser
     assert settings.default_timeout > 0
 
-    # data_loader resolves a path under test_data/ and returns the persona.
-    persona = get_user("example_alias")
-    assert persona["username"]
+    # data_loader resolves a real feature's fixture under test_data/ and
+    # returns its parsed content — proven against actual data, not a
+    # template placeholder, so this stays valid however many features land.
+    fixture = load_json("landing.json")
+    assert fixture["nodes"]
 
     # BasePage exposes the Page Object Model contract every real page object
     # will extend — checked by introspection, since this test opens no browser.

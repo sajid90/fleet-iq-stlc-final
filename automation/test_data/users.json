@@ -1,9 +1,0 @@
-{
-  "_comment": "EXAMPLE test data — a template showing the shape a persona file takes. Replace with real personas for the first feature, named automation/test_data/<feature>.json. Never place real credentials here; real values come from .env.",
-  "example_alias": {
-    "username": "PLACEHOLDER_USERNAME",
-    "password": "PLACEHOLDER_PASSWORD",
-    "role": "PLACEHOLDER_ROLE",
-    "description": "Template persona — replace with a real test account alias"
-  }
-}

@@ -12,7 +12,6 @@ import pytest
 from playwright.sync_api import expect
 
 from automation.pages.landing_page import LandingPage
-from automation.pages.login_page import ExamplePage, ExampleResultPage
 from automation.utils.config import Settings
 
 
@@ -37,21 +36,6 @@ def _apply_timeouts(page, settings: Settings) -> None:
     page.set_default_timeout(settings.default_timeout)
     page.set_default_navigation_timeout(settings.default_timeout)
     expect.set_options(timeout=settings.default_timeout)
-
-
-# --------------------------------------------------------------------------
-# EXAMPLE page-object fixtures — template only.
-# Replace with the real feature's page-object fixtures once it lands.
-# --------------------------------------------------------------------------
-
-@pytest.fixture
-def example_page(page, settings: Settings) -> ExamplePage:
-    return ExamplePage(page, settings)
-
-
-@pytest.fixture
-def example_result_page(page, settings: Settings) -> ExampleResultPage:
-    return ExampleResultPage(page, settings)
 
 
 # --------------------------------------------------------------------------
