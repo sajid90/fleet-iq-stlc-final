@@ -60,8 +60,8 @@ done
 
 cd "$REPO_ROOT"
 
-RESULTS_DIR="$REPO_ROOT/reports/allure-results"
-REPORT_DIR="$REPO_ROOT/reports/allure-report"
+RESULTS_DIR="$REPO_ROOT/automation/reports/allure-results"
+REPORT_DIR="$REPO_ROOT/automation/reports/allure-report"
 mkdir -p "$RESULTS_DIR"
 
 # --- Preflight -------------------------------------------------------------

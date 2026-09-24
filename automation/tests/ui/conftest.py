@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from playwright.sync_api import expect
 
-from automation.pages.login_page import ExamplePage, ExampleResultPage
+from automation.pages.landing_page import LandingPage
 from automation.utils.config import Settings
 
 
@@ -39,15 +39,9 @@ def _apply_timeouts(page, settings: Settings) -> None:
 
 
 # --------------------------------------------------------------------------
-# EXAMPLE page-object fixtures — template only.
-# Replace with the real feature's page-object fixtures once it lands.
+# FLTIQ-62 — public landing page
 # --------------------------------------------------------------------------
 
 @pytest.fixture
-def example_page(page, settings: Settings) -> ExamplePage:
-    return ExamplePage(page, settings)
-
-
-@pytest.fixture
-def example_result_page(page, settings: Settings) -> ExampleResultPage:
-    return ExampleResultPage(page, settings)
+def landing_page(page, settings: Settings) -> LandingPage:
+    return LandingPage(page, settings)

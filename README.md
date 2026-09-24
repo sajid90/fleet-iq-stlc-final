@@ -137,7 +137,7 @@ automation/
 
 On failure the Allure report carries a screenshot, the page DOM, the URL and
 the browser console, attached to the failed test itself. Playwright traces and
-videos land in `reports/test-artifacts/`; open one with
+videos land in `automation/reports/test-artifacts/`; open one with
 `playwright show-trace <path>`.
 
 ## Test case export

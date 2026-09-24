@@ -1,0 +1,60 @@
+{
+  "nodes": {
+    "a": {
+      "id": "a",
+      "label": "Building A",
+      "meta": "2 subgroups",
+      "devices": 79,
+      "type": "Mixed — 2 types",
+      "source": "Organisation default",
+      "status": "healthy",
+      "statusLabel": "Healthy",
+      "note": "Subgroups may override the organisation default. Two do."
+    },
+    "a1": {
+      "id": "a1",
+      "label": "Floor 1",
+      "meta": "41 devices",
+      "devices": 41,
+      "type": "Gateway XR-2",
+      "source": "Building A",
+      "status": "healthy",
+      "statusLabel": "Healthy",
+      "note": "A change applied here reaches 41 devices. Nothing is applied until you review the diff."
+    },
+    "a2": {
+      "id": "a2",
+      "label": "Floor 2",
+      "meta": "38 devices",
+      "devices": 38,
+      "type": "Gateway XR-2",
+      "source": "Overridden here",
+      "status": "caution",
+      "statusLabel": "3 pending",
+      "note": "Three devices have not acknowledged the last push. They keep their previous configuration until they do."
+    },
+    "b": {
+      "id": "b",
+      "label": "Building B",
+      "meta": "0 subgroups",
+      "devices": 0,
+      "type": "—",
+      "source": "Organisation default",
+      "status": "decommissioned",
+      "statusLabel": "Empty",
+      "note": "Devices appear here the moment they claim a provisioning token."
+    },
+    "un": {
+      "id": "un",
+      "label": "Unassigned",
+      "meta": "501 devices",
+      "devices": 501,
+      "type": "Mixed — 4 types",
+      "source": "None — inherits nothing",
+      "status": "warning",
+      "statusLabel": "Needs placing",
+      "note": "Unassigned devices report telemetry but receive no configuration. Place them in a group to give them one."
+    }
+  },
+  "default_selected": "a1"
+}

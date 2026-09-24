@@ -90,6 +90,16 @@ note the planning gate recorded. If the test plan has not been approved, halt
 and say which artifact is waiting and what setting `Status: Approved` means.
 `--force-gate` proceeds and records the override in `tasks.md`.
 
+**Post-approval change check (constitution XIII).** Apply the same check to
+**both** `spec.md` and `plan.md`: if either's `Status` reads `Approved` but
+its `## Change Log` has a **Scope change**/**New requirement** entry with no
+fresh `Approved by`/`Approved on` dated on or after it, halt and name the
+specific entry — proceeding would build test cases on a basis whose own gate
+was bypassed. A `Clarification`/`Correction` entry does not block. If test
+cases already exist for a `TR-xxx` that a logged change touched, this run's
+job is the targeted update Step 5 of constitution XIII describes, not a
+wholesale re-generation — record the update in `tasks.md`'s own Change Log.
+
 ### Step 2: Load context
 
 From `FEATURE_DIR`:
@@ -113,7 +123,7 @@ skipping a dimension is a decision you must be able to defend:
 | Negative | Invalid input, wrong credentials, missing permissions, rejected states |
 | Boundary | Min, min−1, max, max+1, empty, zero, maximum length |
 | Data variation | Each equivalence class that behaves differently |
-| Edge cases | Every row of `spec.md` §5 |
+| Edge cases | Every row of `spec.md` §5, unless §12 classifies it INFERRED with no distinct product requirement — see the waiver rule below |
 | NFR | Each measurable target in `spec.md` §8 |
 | Compatibility | The browser/viewport matrix from `spec.md` §7, where behaviour can differ |
 
@@ -126,11 +136,16 @@ skipping a dimension is a decision you must be able to defend:
 - **The expected result is observable** — a state the tester can see, not an
   internal assumption.
 - **Preconditions are explicit**, including the required data and role.
-- **Every case cites at least one `TR-xxx`.** Where the source provides an
-  acceptance-criterion id, the case also cites it in `acceptance_criteria` —
-  that is what makes the chain start at the Jira AC rather than at `TR-xxx`.
-  An untraced case violates
-  constitution principle I; either trace it or delete it.
+- **Every case cites at least one `TR-xxx` that actually establishes the
+  behaviour being asserted** — not merely a nearby or thematically related
+  one. A case testing X may cite only a `TR-xxx` whose own text states X; if
+  no requirement does, the case doesn't belong in this file (see the waiver
+  rule below), and reaching for the closest-sounding `TR-xxx` to satisfy the
+  citation rule is exactly the failure this note exists to prevent. Where the
+  source provides an acceptance-criterion id, the case also cites it in
+  `acceptance_criteria` — that is what makes the chain start at the Jira AC
+  rather than at `TR-xxx`. An untraced case violates constitution principle I;
+  either trace it properly or delete it.
 - **Priority is inherited from its requirement**, raised where risk justifies it.
 - **Automatable** is decided using the candidacy rules in `plan.md` §B1, not by
   guesswork.
@@ -143,6 +158,88 @@ skipping a dimension is a decision you must be able to defend:
   `blocked_reason` naming the §13a question, and no `expected_result`. The
   requirement stays visible and uncovered, with the reason attached, rather
   than silently vanishing from the coverage matrix.
+- **An edge case in `spec.md` §5 that §12 classifies INFERRED with "not a
+  distinct product requirement" produces no case at all — not even a boundary
+  or negative one.** Constitution II is explicit: INFERRED means test
+  mechanics only, never an expected result. Writing a full asserting case for
+  one anyway is fabricating a requirement nobody stated — indistinguishable
+  from testing the browser/framework rather than the product (e.g. asserting
+  that an `<a href="#section">` scrolls to its anchor, which is guaranteed by
+  the HTML standard, not a FleetIQ decision). If the row is genuinely a
+  boundary/combination of an *already-DEFINED* requirement (e.g. two existing
+  P1 requirements' boundary values combined), it still earns a real case,
+  citing those requirements — the bar is whether a source establishes the
+  behaviour at all, not whether the row happens to sit in the Edge Cases
+  table. Where it doesn't, add one sentence to that row of `spec.md` §5 itself
+  stating the waiver and why, and move on — do not manufacture a citation to
+  an unrelated `TR-xxx` just to make the coverage checklist pass.
+
+### Step 3.5: Pre-write validation gate (mandatory, per case and as a final sweep)
+
+This is the last hard stop before anything reaches `test-cases.json`
+(constitution I). For **every** candidate case, before it is added, confirm
+each of the following in order:
+
+1. Identify the scenario it belongs to.
+2. Identify the `TR-xxx` it cites.
+3. Read that `TR-xxx`'s **exact text** in `spec.md` §3 — not a memory of it.
+4. Identify the source that `TR-xxx` itself cites (its Authority/source id).
+5. Identify the acceptance-criterion id, if the source provides one.
+6. Confirm the case's `expected_result` is explicitly supported by that
+   `TR-xxx`'s own text — not adjacent to it, not a plausible extension of it.
+7. Confirm the case does not rely on a nearby or thematically similar
+   `TR-xxx` that doesn't actually establish this behaviour.
+8. Confirm the behaviour is not merely inferred, assumed, or "generally how
+   this kind of page/flow works" — if it is, it belongs in the INFERRED
+   test-mechanics bucket at most, never as an expected result (constitution
+   II).
+
+**If any step fails, do not generate the test case.** Specifically:
+
+- Do **not** solve the gap by attaching a nearby or thematically similar `TR-xxx`.
+- Do **not** create a new `TR-xxx` to justify the test.
+- Do **not** silently reclassify an UNDEFINED requirement as DEFINED to make
+  the case writable.
+- Do **not** add the case to `test-cases.json`.
+
+Instead, report it as an **untraceable test candidate**:
+
+```markdown
+## Untraceable Test Candidate: [proposed title]
+
+**Why it looked worth testing**: [one sentence]
+**Missing link**: [no TR-xxx covers this / TR-xxx exists but doesn't state this / no source backs the cited TR-xxx]
+**Classification**: UNDEFINED
+**Next step**: raise as a clarification/open question in spec.md §13, via /speckit-clarify — not written here
+```
+
+**Final sweep — no orphan tests.** Before writing `test-cases.json`, walk every
+case one more time and confirm the full chain:
+
+```
+TC-xxx  ->  TR-xxx  ->  Source  ->  Jira / Epic / PRD / Decision / Design / Linked Issue
+```
+
+Any case where a link is missing is **rejected** at this point, not patched
+with a borrowed citation — remove it and report it as above.
+
+**Clause-level coverage, not just row-level.** Before treating any `TR-xxx`
+as covered, decompose its own §3 text into every distinct element or clause
+it names — a list ("the product mark, the section anchors, and the Sign in /
+Create account controls") or a compound sentence joined by "and" is naming
+**more than one thing**, not one. Confirm each named element has at least one
+case citing this `TR-xxx` — not just that the `TR-xxx` as a whole has *a*
+case. A `TR-xxx` with cases covering 2 of its 3 named elements is **partially
+covered**, which reads identically to "covered" in every existing check
+(constitution I's "no test without a requirement" is satisfied technically,
+while a named element has zero coverage) — this is exactly how FLTIQ-62's
+"Capabilities"/"Hierarchy" nav links went missing: TR-003 had cases, just not
+one for every element TR-003 itself names. Where a named element has no case
+and no explicit waiver in `spec.md` (e.g. it was folded into an edge case's
+INFERRED waiver without its own DEFINED facts split out first), report it the
+same way as an untraceable candidate — but phrased as a **gap**, not an
+invention: `**Missing element coverage**: TR-xxx names "[element]" with no
+case asserting it` — and add the case, since the source already establishes it.
 
 ### Step 4: Write `test-cases.json`
 
@@ -251,17 +348,30 @@ Wrong: `- [ ] Automate login` — no id, no path, no coverage.
 Finish `tasks.md` with the dependency graph, parallel opportunities, execution
 strategy and the traceability table.
 
+**The traceability table lists every `TR-xxx` *and* every `EC-xxx` from
+`spec.md` §5 — exhaustively, in one pass, not one row at a time as each
+happens to come up later.** A table that only grows when something is being
+fixed will under-represent everything that was already correct from the
+start — this is exactly how FLTIQ-62's table ended up listing 4 of its 6
+edge cases: the two that never needed a fix never got a row, even though
+both had real coverage from day one. Build the full row set now, in this
+step, from the complete list of `TR-xxx`/`EC-xxx` ids in `spec.md` — never
+defer a row to "whenever that item next comes up."
+
 ### Step 7: Validate coverage
 
 Before reporting, verify and state the result of each:
 
 - [ ] Every `TR-xxx` in `spec.md` maps to at least one test case
+- [ ] Every distinct element/clause a `TR-xxx` names in its own text has a case, not just the `TR-xxx` as a whole (clause-level coverage)
 - [ ] Every **P1** requirement has at least one **P1** case
 - [ ] Every scenario has positive **and** negative coverage
-- [ ] Every edge case in `spec.md` §5 has a case
+- [ ] Every edge case in `spec.md` §5 has a case, or — for one §12 classifies INFERRED with no distinct product requirement — an explicit waiver written into that row instead
 - [ ] Every NFR in `spec.md` §8 has a case or an explicit written waiver
 - [ ] No case is untraced (the exporter reported zero warnings)
+- [ ] Every case passed the Step 3.5 pre-write gate — none cites a borrowed/unrelated `TR-xxx`, none rests on an unsupported assumption, and any untraceable candidate was reported and excluded, not written in anyway
 - [ ] Every automatable case has a task in `tasks.md`
+- [ ] `tasks.md`'s own Traceability table lists every `TR-xxx` *and* every `EC-xxx` from `spec.md` — not only the ones a fix happened to touch (count both lists and compare, don't eyeball it)
 - [ ] `test-cases.xlsx` regenerated from the current JSON
 
 Any gap is reported to the user — never silently accepted.
@@ -318,6 +428,8 @@ Report:
 - Requirement coverage: n of n `TR-xxx` covered; name any that are not
 - Automation task count and the MVP scope (usually Phase 1 → 2 → 3)
 - Format validation: confirm every task has a checkbox, id, path and `covers:`
+- Untraceable test candidates found and excluded (Step 3.5), if any, with the
+  missing link named for each
 - Next phase: `/speckit-implement`
 
 `tasks.md` must be immediately executable — each task specific enough to
@@ -325,6 +437,7 @@ complete without re-reading this conversation.
 
 ## Done When
 
+- [ ] Every case passed the Step 3.5 pre-write gate; no orphan or borrowed-`TR-xxx` case reached `test-cases.json`
 - [ ] `test-cases.json` written and passing the exporter's validation
 - [ ] `test-cases.xlsx` and `test-cases.md` generated with zero warnings
 - [ ] `tasks.md` generated with every task in the strict format

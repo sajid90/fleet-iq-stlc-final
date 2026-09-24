@@ -121,6 +121,23 @@ points that also apply to any code in `automation/`:
   and return page objects or plain data; tests hold every assertion.
 - **Selector priority**: `get_by_role` → `get_by_label` → `data-testid` → CSS.
   XPath requires a comment justifying it.
+- **Static UI text is asserted exactly, never semantically** (constitution
+  VII.a): every button label, link text, heading and static copy an approved
+  source states literally is checked with `==` against the correct element's
+  own isolated text — never `in`, `.lower()`, or `exact=False` used to decide
+  whether the text is *right*. Tolerant matching is fine for *locating* an
+  element to click or navigate; it never substitutes for the exact-match
+  assertion of what that element says. Verify against the design source
+  itself, not `spec.md`'s transcription of it, when the two could disagree.
+- **Closing an item propagates everywhere it's cited, not just its own
+  section** (constitution XIII Step 4a): resolving a clarification question,
+  a defect, or a requirement's status means searching every artifact in
+  `FEATURE_DIR` for that item's identifier and re-verifying each hit —
+  never trusting a prose citation's own wording ("still-open", "pending",
+  "excluded") about another section's current state. FLTIQ-62's own
+  incident: `spec.md` §11 called a clarification question "still-open" a
+  full day after it had closed, and that stale sentence was cited — twice,
+  in two artifacts — to exclude a real defect from a report.
 - **Determinism only**: Playwright auto-waiting / web-first assertions;
   `time.sleep` is banned; every test creates its own state, passes in any
   order and under parallel execution (`pytest-xdist`).
@@ -170,7 +187,7 @@ collected in CI.
 
 On failure, the Allure report gets a screenshot, DOM, URL and browser console
 attached to the failing test. Traces/videos land in
-`reports/test-artifacts/`; inspect with `playwright show-trace <path>`.
+`automation/reports/test-artifacts/`; inspect with `playwright show-trace <path>`.
 
 Regenerate the Excel/Markdown test-case export after editing
 `test-cases.json` (never edit the `.xlsx` directly):
@@ -211,12 +228,15 @@ automation/
 ├── locators/        locator constants, kept out of page-object logic — one
 │                     file per feature, <feature>_locators.py
 ├── test_data/       static JSON test data — one file per feature, <feature>.json
-└── tests/
-    ├── test_framework_wiring.py   browserless self-check — no product, no .env
-    ├── ui/          browser-driven UI tests, test_<feature>.py; conftest.py
-    │                 here holds the browser-only autouse timeout fixture and
-    │                 registers each feature's page-object fixtures
-    └── api/         API-level tests, no browser — empty until the first one
+├── tests/
+│   ├── test_framework_wiring.py   browserless self-check — no product, no .env
+│   ├── ui/          browser-driven UI tests, test_<feature>.py; conftest.py
+│   │                 here holds the browser-only autouse timeout fixture and
+│   │                 registers each feature's page-object fixtures
+│   └── api/         API-level tests, no browser — empty until the first one
+└── reports/         GENERATED, gitignored — never source. allure-results (raw),
+                      allure-report (HTML), test-artifacts (traces/videos).
+                      Path comes from REPORTS_DIR in utils/config.py
 ```
 
 `BasePage` (`automation/utils/base_page.py`) is the contract every page
@@ -231,7 +251,21 @@ pattern — replace it with the first real feature's page object.
 `automation/utils/config.py::Settings` is the single source of runtime
 configuration, driven entirely by environment variables (`BASE_URL`,
 `TEST_ENV`, `BROWSER`, `HEADLESS`, `SLOW_MO`, `DEFAULT_TIMEOUT`,
-`VIEWPORT_WIDTH/HEIGHT`, `TEST_USERNAME`/`TEST_PASSWORD`). Never hard-code
+`VIEWPORT_WIDTH/HEIGHT`, `MAXIMIZE`, `TEST_USERNAME`/`TEST_PASSWORD`).
+`MAXIMIZE` defaults to **true**: a headed run drops the fixed viewport so the
+page fills the real window (plus `--start-maximized` on Chromium). It is
+**headed-only** — headless keeps `VIEWPORT_WIDTH/HEIGHT`, since headless has
+no window and a fixed viewport is what keeps layout assertions reproducible
+across machines and in CI. A `--headed` run therefore maximizes by default;
+pass `--no-maximize` to keep the fixed viewport instead. There is no
+`--maximize` flag — it would only restate the default. `MAXIMIZE` is read
+strictly from the environment with no in-code fallback, but it is only
+*required* for a headed run: headless ignores it, so an unset value there is
+moot rather than an error. `HEADLESS` and `SLOW_MO` are
+applied in `browser_type_launch_args`, with the `--headed` / `--slowmo` CLI
+flags taking precedence. A test that calls `page.set_viewport_size()` still
+overrides everything above, so the responsive cases (360px, 200%-zoom) keep
+their own resolutions in every mode. Never hard-code
 target URLs or credentials elsewhere. `automation/utils/data_loader.py`'s
 `get_user`/`load_json` take a `filename` relative to `test_data/` — pass e.g.
 `"<feature>.json"` to reach a feature's own fixtures.
@@ -259,7 +293,7 @@ and `.md` are generated from it and must never be hand-edited.
 └── workflows/speckit/              the gated "Full STLC Cycle" workflow
 specs/<nnn-feature>/                phase artifacts, one dir per ticket
 automation/                          the automation framework (see above)
-reports/                            allure-results (raw), allure-report (generated HTML), test-artifacts (traces/videos)
+automation/reports/                  allure-results (raw), allure-report (generated HTML), test-artifacts (traces/videos) — generated, gitignored
 ```
 
 **Upgrade hazard**: `.claude/skills/speckit-*/SKILL.md` live at the same

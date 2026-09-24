@@ -11,6 +11,23 @@
 > Everything downstream (test plan, test cases, automation) traces back to a
 > `TR-xxx` identifier defined here. No implementation detail belongs in this file.
 
+## Change Log
+
+<!--
+  Required once Status first becomes Approved. Every edit made after that
+  point gets a row here -- constitution XIII, Post-Approval Change Control.
+  Classification: Clarification | Correction | Scope change | New requirement.
+  Clarification/Correction may keep Status: Approved. Scope change/New
+  requirement must revert Status to In Review until re-approved. Blast radius
+  is the /speckit-analyze (or /speckit-converge) finding of what downstream
+  already encoded the pre-change content -- "nothing yet" is a valid answer,
+  but state it, don't omit the row.
+-->
+
+| Date | Classification | What changed | Blast radius | Status impact |
+|------|-----------------|--------------|---------------|----------------|
+| [DATE] | [Clarification/Correction/Scope change/New requirement] | [What changed and why] | [What /speckit-analyze found downstream, or "none yet"] | [Stayed Approved / Reverted to In Review, re-approved DATE by NAME] |
+
 ## 1. Requirement Summary
 
 [2-4 sentences in plain business language: what changes for the user, and why.
@@ -253,6 +270,69 @@ Derived from the resolved sources — not invented.]
 | jira-story | [KEY] | — | [KEY] (self) | [ISO datetime] | scope-and-story-acceptance | primary |
 | jira-epic | [KEY] | — | [KEY] (self) | [ISO datetime] | feature-context | parent |
 | prd | [filename] | [v1.2] | [issue key it was actually attached to] | [ISO datetime] | detailed-requirements | [parent / subtask-of-story / subtask-of-epic / issue-link] |
+
+### 15a. UI Element Enumeration
+
+<!--
+  Present only when a presentation-and-interaction source (design mockup or
+  prototype) was resolved. Absent or empty while such a source exists is a
+  hard halt per speckit-specify 1F.3 -- never leave this section out because
+  the design "looked fully covered" by the requirements above.
+
+  This is the enumeration's RECEIPT, produced by running speckit-specify's
+  1F.3 passes before any TR was drafted -- not a fresh summary written while
+  filling this template. A row already covered by a requirement carries a
+  bare TR-xxx reference, never a second copy of its text: the design appears
+  in this spec once. Only an uncovered row quotes its content, because that
+  is precisely the kind of gap this section exists to surface.
+-->
+
+**Pass 0 — Screens in scope**: every file in the design project, not only the
+one the ticket's design-link field names.
+
+| File | In scope? | Reason |
+|------|-----------|--------|
+| [filename.dc.html] | Yes | [named in the ticket's design-link field / covers a screen this story renders] |
+| [other-ticket-screen.dc.html] | No | [belongs to a different ticket's flow — name it] |
+
+For each **in-scope** screen, six passes — each stating its count and how
+that count was derived:
+
+**1. Text elements** *(N found, derived from: [basis])*
+
+| Element | Content | Disposition |
+|---------|---------|--------------|
+| [h2 / label / button text / etc.] | ["exact copy"] | TR-00n / excluded: [reason] / open question: §13a Qn |
+
+**2. Interactive elements** *(N found, derived from: [basis])*
+
+| Element | Accessible name | Target / handler | Resulting behaviour | State | Disposition |
+|---------|------------------|-------------------|----------------------|-------|--------------|
+| [`<a>` / `<button>`] | [name] | [`href` / handler] | [what actually happens on activation — never just "is a link"] | [enabled/disabled] | TR-00n / excluded / open question |
+
+**3. Repeated labels** *(N distinct labels found, derived from: [basis])*
+
+| Label | Instances (location, order) | Disposition |
+|-------|-------------------------------|--------------|
+| ["Sign in"] | [header (1st), hero (2nd), closing (2nd)] | TR-00n / excluded / open question |
+
+**4. Data fixtures** *(N records × N fields found, derived from: [basis])*
+
+| Record | Field | Value | Disposition |
+|--------|-------|-------|--------------|
+| [node id] | [field name] | [exact value] | TR-00n / excluded / open question |
+
+**5. Visibility & conditionals** *(N found, derived from: [basis])*
+
+| Condition / prop | Gates | Classification | Disposition |
+|-------------------|-------|------------------|--------------|
+| [`showX` / `theme` / state] | [what it shows/hides] | real feature / authoring scaffolding | TR-00n / excluded: [reason] |
+
+**6. Semantic attributes** *(N found, derived from: [basis])*
+
+| Element | Attribute | Value | Disposition |
+|---------|-----------|-------|--------------|
+| [element] | [`aria-*` / `role` / `type` / `alt`] | [value] | TR-00n / excluded / open question |
 
 ### Missing Sources
 

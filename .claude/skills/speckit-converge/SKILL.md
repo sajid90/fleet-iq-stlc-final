@@ -123,7 +123,15 @@ message naming the prerequisite command (`/speckit-specify`, `/speckit-plan`,
 
 **From `spec.md`**: testable requirements (`TR-xxx`) with priority; scenarios
 and their acceptance scenarios (`S1/AC2`); edge cases (§5); NFRs (§8); exit
-criteria (§10).
+criteria (§10); the `## Change Log`, if present.
+
+**Post-approval change note (constitution XIII).** If `spec.md`'s Change Log
+has an entry dated after the automation under test was last touched, this
+run is reconciling against a basis that moved, not just against drift the
+automation introduced on its own. Say so explicitly in the findings summary
+— a gap the Change Log's own blast-radius column already predicted is a
+different finding than a place the suite silently fell behind, even though
+both surface here.
 
 **From `plan.md`**: the manual scope (§A3); automation candidacy rules and
 target coverage (§B1); framework structure (§B3); design rules (§B4); test data

@@ -21,6 +21,38 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Pre-Execution Checks
 
+**Dependency resolution gate (run first, before anything else, including
+extension hooks below).** This command produces a governed artifact
+(`spec.md` + `source-manifest.json`) that every downstream phase trusts
+without re-verifying. A missing dependency here does not degrade into a
+slightly worse spec — it produces a spec that *looks* complete while silently
+skipping something the constitution requires. Verify each of the following
+and **halt**, reporting exactly which check failed and why, rather than
+proceeding in a degraded mode the requester did not ask for:
+
+- `.specify/memory/constitution.md` exists. If missing, stop and say:
+  > `.specify/memory/constitution.md` is missing. This command's output is
+  > checked against it (constitution I/II — source authority and evidence
+  > classification); without it there is nothing to classify DEFINED /
+  > OBSERVED / INFERRED / UNDEFINED against. Run `/speckit-constitution` to
+  > create it, or restore the file, then re-run.
+- `.specify/templates/source-manifest-template.json` exists. If missing, stop
+  and say:
+  > `.specify/templates/source-manifest-template.json` is missing, so
+  > `source-manifest.json` cannot be produced in the required schema. Restore
+  > it from the repository's template set before re-running.
+- `.specify/jira-field-map.json` exists. If missing, stop and say:
+  > `.specify/jira-field-map.json` is missing, so custom-field resolution
+  > (1D) has no synonym list to match against and would have to guess field
+  > ids — which this command never does. Restore the file before re-running.
+- **Atlassian MCP connectivity** is checked in 1B, once the ticket key/URL is
+  known — do not duplicate that check here, and do not skip it there either.
+- **Claude Design MCP connectivity** is checked in 1F.2, and only once a
+  design-link field is actually found resolved on an issue in the set — a
+  story with no design link never needs that connection.
+
+Only once this gate passes does any other Pre-Execution Check run.
+
 **Check for extension hooks (before specification)**:
 - Check if `.specify/extensions.yml` exists in the project root.
 - If it exists, read it and look for entries under the `hooks.before_specify` key
@@ -242,6 +274,149 @@ where a document was found, not just that it was found.
   category — record it as `type: "unclassified"` with the filename, so a
   reviewer can say what it is rather than the skill guessing.
 
+**1F.2 — Design connectivity gate (blocking).** If any issue in the resolved
+set carries a resolved design-link field value (1D), that design is not
+decoration — it is authority 5 (`presentation-and-interaction`), the only
+source for layout, exact copy and interaction detail. A design link that
+exists but cannot be read must not be silently recorded as merely missing;
+the requester needs to know a real, named source is going unread before this
+spec is written, not after.
+
+- Locate the Claude Design MCP tools (`ToolSearch` for `design project file`,
+  or `select:` with an exact name such as `DesignSync`).
+- Attempt to resolve the specific project referenced by the link (the
+  `/p/<project-id>` segment) with a read method (e.g. `get_project`). A
+  successful read confirms connectivity.
+- **List every file in the project** (e.g. `list_files`) — not only the one
+  named in the link's `?file=...` query parameter. A design project routinely
+  holds screens for other tickets, but it can just as routinely hold more
+  than one screen *this* ticket touches, and fetching only the linked file
+  would silently skip the rest. This file list is the input to 1F.3 Pass 0,
+  which records an explicit in-scope/out-of-scope decision for every one of
+  them — never assume the linked file is the only relevant one without
+  checking.
+- Fetch the file named in the link's `?file=...` query parameter (it is
+  always in scope by construction) and treat its content as a
+  `presentation-and-interaction` source per 1F. Fetch every other file that
+  1F.3 Pass 0 places in scope the same way.
+- **If the Claude Design MCP is not connected, connects but rejects
+  authorization, or the specific project/file cannot be read**, stop and say
+  exactly this rather than continuing in degraded mode:
+  > A design link is present on `<issue key>` (`<field name>`: `<url>`), but
+  > I cannot read its content — the Claude Design MCP connection is
+  > `<not connected | rejecting authorization | otherwise unreachable>`.
+  > This design is a first-class requirement source (constitution I,
+  > authority 5), not decoration, so I will not silently produce a spec that
+  > skips it. Either connect/authorize the Claude Design MCP server and
+  > re-run, or explicitly tell me to proceed without it — if you do, I will
+  > record it in `missing_sources` with `impact: high` and raise every
+  > UI-content requirement it would have settled as an open question (§13a if
+  > it affects scope, §13b otherwise) instead of writing a concrete expected
+  > result.
+- **If the project connects but its file list cannot be enumerated**, do not
+  silently treat the single linked file as though it were the whole project.
+  Say so explicitly, and record every unenumerated possibility in
+  `missing_sources` (`impact: medium`, reason "project file list unavailable
+  — cannot confirm no other in-scope screen exists"), rather than reporting
+  Pass 0 as complete when it never had anything to exclude from.
+- A story with **no design-link field resolved on any issue in the set**
+  skips this gate entirely: there is nothing to block on.
+
+**1F.3 — Enumerate every UI element; never read the design as prose.** This
+runs **before any TR is drafted** — an inventory written after the
+requirements is a summary of what was already noticed, and inherits exactly
+the same blind spots the requirements have. Completeness is the requirement
+here, not brevity: every UI element in every in-scope screen is enumerated —
+text, buttons, links, clickability, visibility, states, and every data
+value — and nothing is omitted for being obvious, decorative, or small. §15a
+is this enumeration's **receipt**, not a fresh summary written while filling
+the template.
+
+**Scope.** Applies to sources carrying authority `presentation-and-interaction`
+(1F.2). PRDs, Epics and stories keep the existing §3a AC-index mechanism —
+their correct unit is "requirement id / AC," which §3a already covers. If a
+resolved design source is **not machine-readable** (a Figma link, a flat
+image, a PDF wireframe), enumeration is not possible from it: say so in
+`missing_sources` with `impact: medium` rather than pretending it happened.
+
+**Pass 0 — Screens in scope.** Using the file list from 1F.2, record an
+explicit in-scope/out-of-scope decision **with a reason** for every file in
+the design project — not only the one named in the ticket's design link. A
+ticket whose design spans several screens must have every one of them
+enumerated in full; a ticket whose design project also contains other
+tickets' screens must exclude them by name, not by omission. This table is
+§15a's Pass 0.
+
+For every screen Pass 0 places in scope, run all six passes below. Each pass
+states **its count and how that count was derived** (e.g. "12 interactive
+elements, from 12 `<a>`/`<button>` occurrences in the source") — a number a
+reviewer can check, not a claim they have to trust.
+
+| Pass | Unit | What it exists to catch |
+|---|---|---|
+| 1. Text elements | Every heading, paragraph, label, button/link text, badge, caption, fine print, list item, table header/cell, placeholder, alt text | Copy that sits between other elements and gets skimmed past when the source is read as prose |
+| 2. Interactive elements | One row per **instance** — element, accessible name, target/handler, **resulting behaviour**, enabled/disabled state | A control whose *presence* is captured but whose *behaviour* never is |
+| 3. Repeated labels | One row per **distinct label**, listing every instance with its location and order | The same label appearing more than once, or in a different order, across sections |
+| 4. Data fixtures | Record × field × **value** | Two fields that look alike but are not the same, and any field named in the data but never read into a requirement |
+| 5. Visibility & conditionals | Anything gated by a prop, condition or state, each classified real-feature vs. authoring-scaffolding | A flag that looks like a feature but is prototype/tooling scaffolding, or the reverse |
+| 6. Semantic attributes | `aria-*`, `role`, `type`, `alt` | Accessibility affordances that carry real behaviour, not just markup hygiene |
+
+Three rules make these passes catch what a prose read misses:
+
+- **Repeated labels are one row per label, not per instance.** Grouping by
+  label forces the cross-location comparison — instance count and order per
+  location — rather than unrelated single-instance entries never compared to
+  each other.
+- **Data fixtures are values per instance, not a schema-level field list.** A
+  field list alone (`meta: string`) never reveals that one field's value
+  looks like another field's value for some records and not others; only the
+  actual values, side by side, do.
+- **Interactive rows name a behaviour, never a presence.** "Has a 'Back to
+  top' link" is not a Pass 2 entry; "'Back to top' link, `href="#top"`,
+  scrolls the page to the top on click" is.
+
+**Anti-duplication rule.** A row whose content is already carried by a
+requirement gets a **bare `TR-xxx` reference in §15a, not a second copy of the
+text** — full enumeration exists for coverage, not to create a second
+manuscript that can drift against the first. Only rows **not** covered by any
+TR quote their content in full, because those are precisely the gaps
+enumeration exists to surface. Every row in every pass carries exactly one
+disposition: a bare `TR-xxx`, an explicit exclusion with a reason
+(scaffolding, out of scope, duplicate of another row), or an open-question
+reference (§13a/§13b).
+
+**One disposition per fact, not per element.** An enumerated row routinely
+mixes a genuinely generic, standard-guaranteed mechanism (waivable, INFERRED)
+with a FleetIQ-specific fact about the *same* element — that this element
+*exists*, or *which* value/target it carries (never waivable; if a source
+names it, it earns a disposition). Never let a single row's disposition apply
+to the whole bundle just because it's one DOM element. Concretely: a nav link
+whose *click-scroll behaviour* is standard anchor mechanics (waivable) can
+still have an *existence* and a *specific target* that a source explicitly
+names (e.g. "the section anchors (Capabilities, Hierarchy)") — that part gets
+its own bare-`TR-xxx` disposition, not a free ride on the mechanism's waiver.
+When a `TR-xxx`'s own text names **more than one** distinct element or clause
+(a list, or a compound sentence joined by "and"), each named item gets
+checked and dispositioned **individually** — a bare reference for each is not
+optional just because the row as a whole already has one. This is exactly the
+failure mode FLTIQ-62 hit: the two nav links were correctly enumerated, then
+folded entirely into an edge case's waiver instead of also getting their own
+`TR-003` disposition for existence and target — an oversight the Step 8
+checklist below is now built to catch.
+
+**Two hard halts, mirroring 1F.2's precedent:**
+
+- A `presentation-and-interaction` source was retrieved, but §15a is absent
+  or empty when Step 7 would write the spec → **halt**; do not write
+  `spec.md` without it.
+- The design project contains files with **no in-scope/out-of-scope decision
+  recorded** in Pass 0 → **halt**; this is exactly the silent-partial-
+  enumeration failure Pass 0 exists to prevent.
+
+Nothing else in this enumeration halts the run — every other gap surfaced
+here is a Step 8 checklist item, fixed within the same iteration limit as any
+other checklist failure.
+
 **1G — Scan prose for dependencies, and fetch what prose finds fully — not
 shallowly.** Empty `issuelinks`, `attachment` and `comment` arrays are **not**
 evidence that there are no dependencies; prose is the fallback channel and must
@@ -306,6 +481,20 @@ directory name. If the user explicitly provided `GIT_BRANCH_NAME`, pass it
 through to the hook verbatim.
 
 ### Step 4: Create the feature directory
+
+**Retrofit mode (constitution XIII).** If `specs/` already contains a feature
+directory for this ticket key with an existing `spec.md` — this run is a
+re-check against a spec that may already be `Approved`, not a first pass —
+**do not create a new numbered directory**. Use the existing one, and treat
+every change through post-approval change control: classify each finding
+(most retrofit findings, being source-verified detail the original pass
+missed, are **Clarifications**; a finding that changes what a source itself
+says is a **Scope change**), add the row to `spec.md`'s `## Change Log`, run
+`/speckit-analyze` once at the end for the blast-radius statement, and revert
+`Status` to `In Review` only if something classified as Scope change/New
+requirement. Silently overwriting an `Approved` spec with no Change Log entry
+is the exact failure this principle exists to prevent — including when the
+retrofit finds nothing new; "ran, found nothing" is still a row.
 
 Specs live under `specs/` unless the user explicitly provides
 `SPECIFY_FEATURE_DIRECTORY`.
@@ -394,6 +583,12 @@ manifest's `conflicts[]`.
 - **A paraphrase is not a conflict.** Two sources stating the same rule at
   different levels of precision — a generalisation and its boundary instance —
   agree. Flagging those buries the real conflicts.
+- **An asymmetry between sources is itself a finding, not a gap to inherit.**
+  If one source enumerates variants or locations for element A (e.g. three
+  named locations for one control) but is silent on a parallel element B in
+  the same UI, do not test B only where the silent source happens to imply —
+  verify B against the design (or another resolved source that can settle it)
+  and write the requirement to match what is actually there.
 
 #### 6.2 Fill the template
 
@@ -456,12 +651,63 @@ manifest's `conflicts[]`.
   §11 and §13a, not a gap for you to fill silently.
 - Write for a reviewer who has not read the ticket.
 
+#### 6.3 Source-backed scenario validation (mandatory, before Step 7)
+
+Before any `TR-xxx`, test scenario, acceptance scenario, edge case, boundary
+condition, or expected result is written into `spec.md`, it must complete
+this chain (constitution I):
+
+```
+Scenario / TR-xxx  ->  Source  ->  Jira Story / Epic / PRD / Decision Log /
+                                    Design / linked or sub-task issue
+```
+
+Every scenario carries, at minimum: a scenario id, the `TR-xxx` it covers, the
+source reference that establishes the behaviour, the acceptance-criterion id
+where one exists, and its evidence classification (DEFINED / OBSERVED /
+INFERRED / UNDEFINED). If the chain cannot be completed, **do not write it as
+a product scenario** — reclassify it UNDEFINED and place it in §13
+(Open Questions) instead, per the Observation Rule at the top of this Outline.
+
+**None of the following ever completes the chain on their own** — they are
+useful QA judgement, not a source, and constitution II hard stop 5 already
+says so explicitly:
+
+- industry or QA best practice, or a security convention (OWASP or otherwise)
+  the project has not adopted in writing
+- generic authentication, session, navigation, browser, or error-handling
+  behaviour
+- generic accessibility expectations the project has not adopted
+- an assumed redirect, landing page, timeout, or logout/session-expiry
+  behaviour
+- a page, screen, or feature not present in the resolved source set
+- behaviour carried over from an unrelated FleetIQ feature, a previous
+  ticket, a previous test suite, or a previous project
+- an example inside a template or this skill file, copied as if it were this
+  feature's own content
+- your own judgement of a **"reasonable default"** — this phrase, or its
+  effect, must never justify a product requirement or expected result
+
+If a behaviour seems worth testing but nothing above establishes it, that
+feeling is real and belongs in §13b as an elective question — it is evidence
+of a genuine gap, not license to write the scenario anyway. The distinction
+is exactly "this would be a useful test" versus "this is a required product
+behaviour" (constitution II); only the second may become a `TR-xxx`, a
+scenario, or an expected result.
+
 ### Step 7: Write the spec and the source manifest
 
 Write `SPEC_FILE` using the template structure, replacing placeholders with
 concrete content and preserving section order and headings. Delete sections
 that genuinely do not apply rather than leaving them as "N/A". Leave
 `Status: Draft` — a human sets it to `Approved` at the requirement-analysis gate.
+
+Populate §15a directly from 1F.3's enumeration passes, exactly as run — do
+not re-derive, re-read the design, or summarise it fresh while writing the
+spec. §15a is the enumeration's receipt; producing it a second time from
+memory here is how it would drift from the actual enumeration and stop
+meaning anything. If 1F.3 was never run because no design source was
+resolved, omit §15a entirely rather than leaving an empty placeholder.
 
 Then write `SPECIFY_FEATURE_DIRECTORY/source-manifest.json` from the template,
 populating `mode`, `jira_issue`, `jira_site`, `retrieved_at` (ISO **datetime**,
@@ -487,6 +733,8 @@ not a bare date), `field_map`, `provenance_rules`, `sources`,
 
 - [ ] Every requirement traces to a named source id (acceptance criterion, PRD section, or ticket field)
 - [ ] Every requirement carries an Authority and a Class
+- [ ] Every `TR-xxx`, scenario, edge case and boundary condition completes the `Scenario -> TR-xxx -> Source` chain (6.3); none rests on industry practice, an assumed redirect/session/navigation behaviour, an unrelated feature, a previous ticket/test suite, or a "reasonable default"
+- [ ] No `TR-xxx` was created, or an existing one attached, solely to give a scenario a citation it would not otherwise have
 - [ ] `source-manifest.json` exists and is valid JSON
 - [ ] `field_map` records how each custom field was resolved, with `matched_by`
 - [ ] No `customfield_NNNNN` literal appears anywhere in the spec
@@ -494,6 +742,18 @@ not a bare date), `field_map`, `provenance_rules`, `sources`,
 - [ ] Every cited-but-unretrieved source is in `missing_sources` with its impact
 - [ ] Every source conflict appears in both §11a and `conflicts[]`
 - [ ] Ticket URL and fetch datetime recorded
+
+## UI Element Enumeration
+
+<!-- Only when a presentation-and-interaction source was resolved (1F.2/1F.3). -->
+
+- [ ] Pass 0 lists every file in the design project, each with an in-scope decision and a reason
+- [ ] Every pass in §15a states its count and how that count was derived
+- [ ] Every UI element in every in-scope screen appears in §15a with a disposition (bare `TR-xxx`, exclusion with reason, or open-question reference)
+- [ ] Every interactive-element row in §15a names a behaviour, not a presence
+- [ ] Every `TR-xxx` that names more than one distinct element/clause in its own text (a list, or a compound sentence joined by "and") has each one individually traceable to a disposition — not just the row as a whole
+- [ ] No enumerated row's disposition lets a waivable generic mechanism (e.g. standard anchor-scroll behaviour) also waive that same element's existence or specific target/value, where a source names either
+- [ ] §3a states the acceptance-criterion count per source and how it was derived
 
 ## Testability
 
@@ -620,6 +880,8 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 Report to the user:
 
+- Dependency resolution gate result (all checks passed, or which one blocked
+  and how it was resolved before continuing)
 - `SPECIFY_FEATURE_DIRECTORY`, `SPEC_FILE` and `source-manifest.json` paths
 - Mode used (`jira` / `document` / `observation`) and the ticket key
 - **The resolved source chain**: story, parent Epic, PRD, decision logs,
@@ -627,6 +889,11 @@ Report to the user:
   recorded as missing with the reason
 - Custom fields resolved, and how they were matched
 - Dependencies found, including any discovered only in prose
+- **§15a UI Element Enumeration** (when a design source was resolved): how
+  many files were in the design project, how many placed in/out of scope and
+  why, and per in-scope screen the six pass counts (text elements,
+  interactive elements, repeated labels, data fixtures, conditionals,
+  semantic attributes)
 - Counts: requirements by Class (DEFINED / OBSERVED / INFERRED / UNDEFINED),
   acceptance criteria indexed, scenarios, edge cases, risks
 - **Source conflicts**: each one, and whether it was adjudicated in a source or
@@ -640,14 +907,23 @@ Report to the user:
 
 ## Done When
 
+- [ ] Dependency resolution gate passed (constitution, source-manifest
+      template, jira-field-map present; Atlassian MCP connected; Claude
+      Design MCP connected if any design link was found) — or the command
+      halted and reported exactly which check failed
 - [ ] The full source chain walked: story → Epic → PRD → decision logs →
       designs → MVP → implementation, each resolved or recorded as missing
 - [ ] Custom fields resolved by display name; no `customfield_NNNNN` literal written
+- [ ] Pass 0 recorded an in-scope/out-of-scope decision, with a reason, for
+      every file in the design project (when a design source was resolved)
+- [ ] §15a UI Element Enumeration completed for every in-scope screen before
+      any TR was drafted, each pass stating its count and how it was derived
 - [ ] `source-manifest.json` written, valid, and free of guessed ids
 - [ ] Every material statement classified DEFINED / OBSERVED / INFERRED / UNDEFINED
 - [ ] No undefined business requirement converted into an assumption
 - [ ] Every source conflict recorded, none silently resolved
 - [ ] `spec.md` written with TR ids, scenarios, risks and a completed Testability Review
+- [ ] Every scenario/TR/edge case passed the 6.3 source-backed validation gate before being written; nothing invented from industry practice, an unrelated feature, or a prior ticket/test suite
 - [ ] Quality checklist created and all items passing, or remaining gaps reported
 - [ ] Extension hooks dispatched or skipped per the rules above
 - [ ] Completion reported with paths and next phase

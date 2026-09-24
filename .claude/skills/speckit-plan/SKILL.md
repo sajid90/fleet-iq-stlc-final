@@ -116,6 +116,16 @@ gate, the date and the reason. An audited override beats an unenforceable rule.
 If `spec.md` still contains an unresolved §13a blocking item against a P1
 requirement, stop and tell the user to run `/speckit-clarify` first.
 
+**Post-approval change check (constitution XIII).** If `spec.md`'s `Status`
+reads `Approved` but its `## Change Log` has an entry classified **Scope
+change** or **New requirement** with no fresh `Approved by`/`Approved on`
+dated on or after that entry, the gate was bypassed — halt with the same
+message as an unapproved spec, naming the specific Change Log entry. A
+**Clarification/Correction** entry needs no such check; the existing approval
+still stands. If this run is itself re-planning after such a spec change,
+re-read the affected `TR-xxx` rows before touching the A0 table so the
+carry-forward table doesn't cite a Class/Authority the spec no longer states.
+
 ### Step 3: Phase 0 — Research and decisions
 
 Resolve every unknown before designing. Produce `FEATURE_DIR/research.md`.

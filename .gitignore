@@ -16,6 +16,7 @@ venv/
 # resolving against an unexpected cwd) can't silently commit runtime debris.
 # Does NOT match specs/<feature>/reports/, which holds hand-written,
 # committed execution-report .md files, not generated JSON/attachments.
+/automation/reports/
 /reports/
 allure-results/
 allure-report/
