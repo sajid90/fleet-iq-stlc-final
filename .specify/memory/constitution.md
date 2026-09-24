@@ -227,6 +227,30 @@ jobs that a semantic match quietly conflates:
   children), isolate the one element that carries the literal string before
   comparing — never assert against the concatenated block with `in`.
 
+**Narrowing the locating carve-out (1.5.0): when the element's own
+accessible content *is* the literal string and nothing else, locate it
+exactly too.** The tolerant-locating carve-out above was written for
+elements whose accessible content legitimately combines the literal string
+with other content an approved source places there too (e.g. an icon glyph
+beside a wordmark) — forcing exact match there fails for a reason unrelated
+to the string, and breaks the moment that sibling content changes for any
+reason, including a fix. It was never meant to cover a standalone link or
+button whose full content is nothing but the static string — a "Create
+account" link, a "Back to top" link. There, a tolerant locator
+(`get_by_role(..., name="create account")` case-insensitive, no `exact=True`)
+doesn't just risk over-matching: it makes the click **succeed** even when the
+shipped label is wrong, so a live defect ships invisibly through every test
+that only clicks through, and only a separate, easy-to-forget assertion
+elsewhere ever catches it. `CREATE_ACCOUNT_NAME`'s original
+`re.compile(r"create.*account", re.IGNORECASE)` did exactly this on
+FLTIQ-62 — TC-002/003/004/007/010-012 clicked straight through
+`"Create an account"` and reported nothing wrong; only TC-029/030/033's
+separate text assertions ever caught D5. A standalone static control is
+therefore located with the same exact string/`exact=True` used to assert it
+— one identifier, one place it's spelled correctly, both jobs use it. State
+in a comment which case applies whenever it isn't obvious from the DOM
+alone (e.g. why a wordmark-plus-icon element stays tolerant).
+
 A page object method that returns a composite, multi-element string (for
 locating or debugging) must say so in its docstring and must not be used for
 an exact-match assertion; add a dedicated method that isolates the single
@@ -390,10 +414,23 @@ compliance. Where a deviation is genuinely warranted, it is recorded in the
 plan's Complexity Tracking table with the simpler alternative that was rejected
 and why. Undocumented deviation is not permitted.
 
-**Version**: 1.4.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-22
+**Version**: 1.5.0 | **Ratified**: 2026-09-17 | **Last Amended**: 2026-09-24
 
 ### Amendment history
 
+- **1.5.0** (2026-09-24, MINOR): Narrowed VII.a's tolerant-locating
+  carve-out. It had permitted a tolerant locator whenever a test only cared
+  about a control's destination, not its label — but `CREATE_ACCOUNT_NAME`'s
+  `re.compile(r"create.*account", re.IGNORECASE)` used that carve-out on a
+  *standalone* link (no other content sharing its accessible name), so it
+  matched `"Create an account"` (D5's wrong label) just as happily as the
+  correct string: every routing test clicked straight through the defect and
+  reported nothing wrong, leaving only the separate copy-assertion tests to
+  ever catch it. The carve-out now applies only where the element's
+  accessible content legitimately combines the literal string with other
+  approved-source content (e.g. an icon glyph beside a wordmark) — a
+  standalone static control is located with the same exact string used to
+  assert it.
 - **1.4.0** (2026-09-22, MINOR): Added principle XIII Step 4a, closing a gap
   in Step 4's own blast-radius check: it scoped "downstream" to structured
   `TR-xxx`/`TC-xxx`/task/test links, never to prose elsewhere that describes

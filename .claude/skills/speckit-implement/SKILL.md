@@ -186,15 +186,21 @@ a test.
 NON-NEGOTIABLE)**. Any button label, link text, heading or static copy an
 approved source states as a literal string is asserted with `==` against
 that element's own isolated text — never `in`, `.lower()`, a regex, or
-`exact=False` used to judge correctness. Locating an element to click or
-navigate may use a tolerant match (that test is about the destination, not
-the label); asserting what the element says is always exact, on a separate
-line, against the source verbatim. If a page-object getter returns a
-multi-element block (e.g. a whole footer), it is for locating/debugging
-only — add a getter that isolates the one element carrying the literal
-string before writing an exact-match assertion against it. Confirm the
-literal string against the design source directly when `spec.md` and the
-design could disagree, not against `spec.md`'s transcription alone.
+`exact=False` used to judge correctness. A tolerant *locating* match is only
+for an element whose accessible content legitimately combines the literal
+string with other approved-source content it shares an element with (an icon
+glyph beside a wordmark, say) — never for a standalone link/button whose
+full content is nothing but the string (e.g. "Create account", "Back to
+top"): locate those with the same exact string used to assert them, because
+a tolerant locator there makes a click succeed even when the shipped label
+is wrong, letting the defect ship invisibly through every test that only
+clicks through (this is exactly how FLTIQ-62's D5 shipped unnoticed on six
+routing tests). If a page-object getter returns a multi-element block (e.g.
+a whole footer), it is for locating/debugging only — add a getter that
+isolates the one element carrying the literal string before writing an
+exact-match assertion against it. Confirm the literal string against the
+design source directly when `spec.md` and the design could disagree, not
+against `spec.md`'s transcription alone.
 
 **Independence** — each test sets up and tears down its own state, and passes
 in any order and in parallel. No shared mutable state between tests.

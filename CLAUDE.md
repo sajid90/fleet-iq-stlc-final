@@ -125,10 +125,18 @@ points that also apply to any code in `automation/`:
   VII.a): every button label, link text, heading and static copy an approved
   source states literally is checked with `==` against the correct element's
   own isolated text — never `in`, `.lower()`, or `exact=False` used to decide
-  whether the text is *right*. Tolerant matching is fine for *locating* an
-  element to click or navigate; it never substitutes for the exact-match
-  assertion of what that element says. Verify against the design source
-  itself, not `spec.md`'s transcription of it, when the two could disagree.
+  whether the text is *right*. Tolerant matching is fine only for *locating*
+  an element whose accessible content legitimately combines the literal
+  string with other approved-source content (e.g. an icon glyph beside a
+  wordmark) — never as a substitute for the exact-match assertion of what
+  that element says. A **standalone** static control (a link/button whose
+  full content is nothing but the string, e.g. "Create account", "Back to
+  top") is located with the same exact string used to assert it: a tolerant
+  locator there lets a wrong label ship invisibly through every test that
+  only clicks through it (FLTIQ-62's D5 — `CREATE_ACCOUNT_NAME`'s
+  case-insensitive regex clicked straight through "Create an account" on
+  every routing test). Verify against the design source itself, not
+  `spec.md`'s transcription of it, when the two could disagree.
 - **Closing an item propagates everywhere it's cited, not just its own
   section** (constitution XIII Step 4a): resolving a clarification question,
   a defect, or a requirement's status means searching every artifact in

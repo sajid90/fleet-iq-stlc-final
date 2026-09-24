@@ -72,7 +72,7 @@ class LandingPage(BasePage):
     def click_create_account(self, location: str) -> None:
         scope = self.page.locator(self._section(location))
         self.click(
-            scope.get_by_role("link", name=L.CREATE_ACCOUNT_NAME),
+            scope.get_by_role("link", name=L.CREATE_ACCOUNT_NAME, exact=True),
             name=f"{location} Create account",
         )
 
@@ -243,7 +243,7 @@ class LandingPage(BasePage):
     @allure.step("Click Back to top in the footer")
     def click_back_to_top(self) -> None:
         self.click(
-            self.page.locator(L.FOOTER).get_by_role("link", name=L.BACK_TO_TOP_NAME),
+            self.page.locator(L.FOOTER).get_by_role("link", name=L.BACK_TO_TOP_NAME, exact=True),
             name="footer Back to top",
         )
 
@@ -252,7 +252,7 @@ class LandingPage(BasePage):
         self.page.locator(L.FOOTER).get_by_text("FleetIQ", exact=False).first.click()
 
     def is_back_to_top_visible(self) -> bool:
-        return self.is_visible(self.page.locator(L.FOOTER).get_by_role("link", name=L.BACK_TO_TOP_NAME))
+        return self.is_visible(self.page.locator(L.FOOTER).get_by_role("link", name=L.BACK_TO_TOP_NAME, exact=True))
 
     # -- page-wide queries --------------------------------------------------------
 

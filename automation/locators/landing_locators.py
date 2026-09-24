@@ -12,9 +12,6 @@ rendered DOM, not just the design mockup - see plan.md B7's own warning that
 the real DOM may differ from the Claude Design prototype.
 """
 
-import re
-
-
 class LandingLocators:
     # -- landmark scopes (CSS, structural) -----------------------------------
     HEADER = "header"
@@ -30,14 +27,14 @@ class LandingLocators:
     NAV_HIERARCHY_NAME = "Hierarchy"
     SIGN_IN_NAME = "Sign in"
     BACK_TO_TOP_NAME = "Back to top"
-    # Matched with a tolerant regex rather than the spec's exact "Create
-    # account" string: TR-004 is about the *destination* these CTAs route
-    # to, which TC-002/003/004/007/010-012 test independently of the
-    # button's literal label. The literal-copy check itself lives in
-    # TC-029/030/033, which read the label via LandingPage.hero_cta_texts()
-    # etc. and assert the exact wording there - so a copy drift is reported
-    # against the right test, not misreported as a broken navigation link.
-    CREATE_ACCOUNT_NAME = re.compile(r"create.*account", re.IGNORECASE)
+    # Exact static string per constitution VII.a - no wildcard/regex for a
+    # known, spec-defined label, same as SIGN_IN_NAME below. Locating call
+    # sites pass exact=True. Note the trade-off this reverses: if the build
+    # ever ships a wrong label again (e.g. "Create an account"), a click
+    # against this locator now fails as "element not found" rather than
+    # succeeding and letting TC-029/030/033 report the copy defect on its
+    # own - i.e. a label typo now surfaces as a routing-test failure too.
+    CREATE_ACCOUNT_NAME = "Create account"
 
     # -- capability cards ------------------------------------------------------
     CAPABILITIES_GRID = 'section[aria-label="Capabilities"] > div'
